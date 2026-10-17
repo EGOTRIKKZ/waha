@@ -1,0 +1,2 @@
+# Shared pieces: if the share function isn't running, still open the page (it shows the one piece)
+/p/*   /index.html   200

@@ -154,6 +154,7 @@ body.preview .dawn,body.preview .hint,body.preview #title,body.preview .sheet .w
 body.preview .sheet{margin-top:0;padding-top:clamp(1.5rem,5vw,3rem)}
 body.preview.short .sheet{display:none}
 .oasis{background:linear-gradient(#86abd0,#f8cf9f);padding:110px 16px 0}
+.pvlead{font-style:italic;font-size:1.15rem;color:#7c4a4f;margin-bottom:.5rem}
 .cartouche{display:inline-flex;align-items:center;gap:.6rem;padding:.42rem 1.25rem .42rem .85rem;border-radius:999px;position:relative;color:#3a2232;
   border:1.5px solid var(--hand);background:color-mix(in srgb,var(--hand) 14%,transparent);margin-bottom:1rem;
   box-shadow:inset 0 0 0 4px transparent,inset 0 0 0 5px color-mix(in srgb,var(--hand) 40%,transparent)}
@@ -404,8 +405,9 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
 <!-- Preview: long piece -->
 <div class="oasis" aria-hidden="true">
   <p class="ill-tag">Illuminated</p>
+  <p class="pvlead">From the hand of</p>
   <div class="cartouche"><svg><use class="sealUse" href="#seal-amir"/></svg><span class="n wName">Amir</span><span class="a wAr">أمير</span></div>
-  <p class="ow" id="pvWhen">First Light</p>
+  <p class="ow" id="pvWhen"></p>
   <h2 id="pvTitle"></h2>
   <div class="scene"><svg viewBox="0 0 1440 120" preserveAspectRatio="xMidYMax slice" id="pvScene"></svg></div>
   <div class="pool"><div class="refl" id="pvRefl"></div></div>
@@ -417,7 +419,7 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
   <div class="shard-wrap"><div class="shard">
     <div class="by"><svg><use class="sealUse" href="#seal-amir"/></svg><span class="wName">Amir</span><span class="a wAr">أمير</span></div>
     <div class="txt" id="pvShort"></div>
-    <div class="ow" id="pvShortWhen">A note at first light</div>
+    <div class="ow" id="pvShortWhen"></div>
   </div></div>
   <svg class="dunes" viewBox="0 0 1440 160" preserveAspectRatio="none">
     <path fill="#d8aaa0" d="M0 80 C240 40 480 50 720 70 C960 90 1200 50 1440 64 V160 H0Z"/>
@@ -461,7 +463,7 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
 
 <div class="nudge" id="nudge"><svg><use href="#i-tap"/></svg>Double-tap to write</div>
 
-<div class="toast" id="toast"><svg><use class="sealUse" href="#seal-amir"/></svg><p id="toastP">Released into the oasis</p><small id="toastS">It rises at first light, and the others move deeper into the day.</small><em id="toastE"></em></div>
+<div class="toast" id="toast"><svg><use class="sealUse" href="#seal-amir"/></svg><p id="toastP">Released into the oasis</p><small id="toastS"></small><em id="toastE"></em></div>
 
 <div class="lock" id="lock" role="dialog" aria-modal="true">
   <div><div class="ar" lang="ar">واحة</div><h2 id="lockT">Opening your pieces…</h2><p id="lockP"></p><div class="spin" id="lockSpin"></div><span id="lockAct"></span></div>
@@ -1054,10 +1056,10 @@ function setPreview(on){
   if(on){
     const t=titleEl.textContent.trim()||'Untitled';
     const when=cur.published_at?new Date(cur.published_at):new Date();
-    $('pvTitle').textContent=t; $('pvRefl').textContent=t; $('pvWhen').innerHTML=skyGlyph(when)+'First Light · '+fmtDate(when.toISOString());
+    $('pvTitle').textContent=t; $('pvRefl').textContent=t; $('pvWhen').innerHTML=skyGlyph(when)+fmtDate(when.toISOString());
     B.classList.toggle('illum-pv',sheet.classList.contains('illum'));
     $('pvShort').innerHTML=[...ed.children].filter(p=>p.textContent.trim()).map(p=>p.innerHTML).join('<br>');
-    { const w=cur.published_at?new Date(cur.published_at):new Date(); $('pvShortWhen').innerHTML=skyGlyph(w)+'A note at first light · '+fmtDate(w.toISOString()); }
+    { const w=cur.published_at?new Date(cur.published_at):new Date(); $('pvShortWhen').innerHTML=skyGlyph(w)+fmtDate(w.toISOString()); }
   }
   scrollTo({top:0,behavior:'smooth'});
 }
@@ -1083,7 +1085,7 @@ $('publishBtn').addEventListener('click',async()=>{
     } else {
       p.status='published';
       try{ await DB.put(p); }catch(e){ p.status='draft'; throw e; }   // the database decides Illuminated at this moment
-      toast('Released into the oasis','It rises at first light, and the others move deeper into the day.',
+      toast('Released into the oasis','It’s now the first piece readers meet. Tap Share on it to pass it on.',
         p.illuminated?`Illuminated · tended across ${p.tended_days.length} days`:'');
     }
     if(p===cur){ savedAt=new Date(); saveFailed=false; p._snap=snapOf(p,p.kind==='long'?(p.title||''):'',p.body); }

@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wāḥa — Amir, Simi &amp; Mike</title>
+<!--og-->
+<meta name="description" content="The writings of Amir, Simi &amp; Mike — three voices, one oasis.">
+<meta property="og:site_name" content="Wāḥa">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Wāḥa — the writings of Amir, Simi &amp; Mike">
+<meta property="og:description" content="Three voices, one oasis.">
+<meta property="og:url" content="https://amirandsimi.netlify.app/">
+<meta property="og:image" content="https://amirandsimi.netlify.app/og/waha.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!--/og-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Marcellus&family=Marcellus+SC&display=swap" rel="stylesheet">
@@ -75,25 +87,32 @@ body{font-family:"Cormorant Garamond",Georgia,serif;color:var(--ink);background:
 section,header,footer{position:relative;z-index:2}
 
 /* ---------- Threshold ---------- */
-.threshold{position:relative;min-height:88vh;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
+.threshold{position:relative;min-height:46vh;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
   padding:0 16px clamp(1rem,3vh,2rem);text-align:center}
 .horizon{position:absolute;left:0;right:0;bottom:0;height:clamp(150px,32vh,300px);z-index:0}
 .horizon svg{width:100%;height:100%;display:block}
 .heading{position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center}
-.when{font-family:"Marcellus SC",serif;color:var(--when);font-size:clamp(.92rem,1.6vw,1.08rem);letter-spacing:.32em;
+.when{font-family:"Marcellus SC",serif;color:var(--when);font-size:clamp(.8rem,1.4vw,.92rem);letter-spacing:.28em;opacity:.9;
   margin-bottom:1rem;display:flex;align-items:center;justify-content:center;gap:.9rem}
 .when::before,.when::after{content:"";width:clamp(24px,5vw,56px);height:1px;background:currentColor;opacity:.6}
 .title,.reflection{font-family:"Marcellus",serif;font-weight:400;line-height:1.04;max-width:13ch;
   font-size:clamp(2.5rem,7vw,5.2rem);letter-spacing:.01em;color:var(--title)}
 
 /* The cartouche — the writer's name, sealed the way Egypt sealed names */
-.cartouche{position:relative;display:inline-flex;align-items:center;gap:.65rem;margin:0 0 1.15rem;
+.lead{display:flex;align-items:center;gap:.7rem;font-style:italic;font-size:clamp(1.08rem,2.2vw,1.3rem);color:var(--when);margin:0 0 .6rem;letter-spacing:.01em}
+.lead::before,.lead::after{content:"";width:7px;height:7px;background:var(--emb);transform:rotate(45deg);opacity:.75}
+.cartouche{position:relative;display:inline-flex;align-items:center;gap:.65rem;margin:0 0 1rem;
   padding:.42rem 1.25rem .42rem .85rem;border-radius:999px;color:var(--title);
   border:1.5px solid var(--emb);
   background:color-mix(in srgb,var(--hand) 14%,transparent);
   box-shadow:inset 0 0 0 4px transparent,inset 0 0 0 5px color-mix(in srgb,var(--emb) 40%,transparent)}
 .cartouche::after{content:"";position:absolute;right:-10px;top:16%;bottom:16%;width:2.5px;border-radius:2px;background:var(--emb)}
 .cartouche svg{width:24px;height:24px;color:var(--emb);fill:var(--emb)}
+.station .cartouche{padding:.6rem 1.7rem .6rem 1.15rem;gap:.85rem;box-shadow:inset 0 0 0 5px transparent,inset 0 0 0 6px color-mix(in srgb,var(--emb) 40%,transparent),0 6px 24px rgba(0,0,0,.08)}
+.station .cartouche svg{width:34px;height:34px}
+.station .cartouche .n{font-size:clamp(1.25rem,3vw,1.55rem);letter-spacing:.26em}
+.station .cartouche .a{font-size:clamp(1.5rem,3.4vw,1.85rem)}
+.station .cartouche::after{right:-13px;width:3px}
 .cartouche .n{font-family:"Marcellus SC",serif;letter-spacing:.24em;font-size:clamp(1rem,1.9vw,1.15rem)}
 .cartouche .a{font-family:Amiri,serif;font-size:1.3rem;line-height:1;color:var(--emb)}
 
@@ -144,11 +163,12 @@ article blockquote::before{top:0}article blockquote::after{top:100%}
 .page article > .in{opacity:1;transform:none}
 
 /* ---------- Hero ---------- */
-.hero .threshold{min-height:100vh;min-height:100svh}
+.hero .threshold{min-height:66vh;min-height:66svh}
 .hero .heading{margin-bottom:clamp(1rem,4vh,3rem)}
 .hero .ar{font-family:Amiri,serif;font-weight:700;font-size:clamp(3rem,9vw,6.5rem);line-height:1;color:var(--gold-light);text-shadow:0 0 40px rgba(220,183,102,.35)}
 .wordmark{font-family:"Marcellus SC",serif;font-weight:400;font-size:clamp(1.6rem,4.2vw,2.6rem);letter-spacing:.55em;margin:.5rem 0 .7rem .55em;color:var(--title)}
 .byline{display:flex;align-items:center;justify-content:center;gap:.7rem;flex-wrap:wrap;font-style:italic;font-size:clamp(1.15rem,2.4vw,1.45rem);color:var(--when)}
+.byline .names{display:inline-flex;gap:1.1rem;justify-content:center;flex-wrap:wrap}
 .byline .who{display:inline-flex;align-items:center;gap:.4rem;font-style:normal;font-family:"Marcellus SC",serif;letter-spacing:.2em;font-size:.82em;color:var(--title)}
 .byline svg{width:20px;height:20px}
 .byline .amir svg{fill:var(--gold-light);color:var(--gold-light)}
@@ -223,6 +243,34 @@ body.signed .quill{display:flex}
 .stitches{display:flex;flex-wrap:wrap;justify-content:center;gap:5px 4px;max-width:15rem}
 .stitches i{width:8px;height:2px;border-radius:1px;background:#c9a14a}
 
+/* ---------- The end of a piece: a clear close, and a way to pass it on ---------- */
+.endcap{display:flex;align-items:center;gap:1rem;max-width:35rem;margin:2.6rem auto 0;color:var(--hand)}
+.endcap .line{flex:1;height:1px;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--hand) 55%,transparent))}
+.endcap .line:last-child{background:linear-gradient(to left,transparent,color-mix(in srgb,var(--hand) 55%,transparent))}
+.share{display:inline-flex;align-items:center;gap:.55rem;border:1.5px solid var(--hand);background:color-mix(in srgb,var(--hand) 8%,transparent);color:var(--hand);
+  border-radius:999px;padding:.6rem 1.2rem .6rem 1rem;cursor:pointer;font-family:"Marcellus SC",serif;letter-spacing:.18em;font-size:.82rem;white-space:nowrap;transition:background .3s,color .3s}
+.share:hover,.share:focus-visible{background:var(--hand);color:#fff8ea}
+.share svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.sharemenu{position:fixed;z-index:120;min-width:15rem;padding:.5rem;border-radius:16px;background:#fbf3e2;box-shadow:0 18px 50px rgba(30,20,10,.28),inset 0 0 0 1px rgba(176,128,43,.3);
+  opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .25s,transform .25s}
+.sharemenu.open{opacity:1;transform:none;pointer-events:auto}
+.sharemenu button{display:flex;align-items:center;gap:.75rem;width:100%;border:none;background:none;padding:.7rem .8rem;border-radius:10px;cursor:pointer;
+  font-family:"Cormorant Garamond",serif;font-size:1.12rem;color:var(--ink);text-align:left}
+.sharemenu button:hover{background:rgba(176,128,43,.12)}
+.sharemenu svg{width:20px;height:20px;flex:none}
+.copied{position:fixed;left:50%;bottom:24px;z-index:121;transform:translate(-50%,12px);opacity:0;pointer-events:none;transition:all .35s;
+  background:#3a2a1c;color:#fbf3e2;padding:.7rem 1.2rem;border-radius:999px;font-style:italic;font-size:1.05rem}
+.copied.show{opacity:1;transform:translate(-50%,0)}
+.end .page .return{margin:0 .3rem .6rem}
+
+/* ---------- A single shared piece ---------- */
+body.single .hero .threshold{min-height:34vh;min-height:34svh}
+body.single .hero .pool,body.single .hero .ground,body.single .river{display:none}
+body.single .hero .ar{font-size:clamp(2.4rem,7vw,4rem)}
+body.single .hero .byline{display:none}
+.homelink{display:none;margin-top:.9rem;font-style:italic;font-size:1.1rem;color:var(--title);text-decoration:none;border-bottom:1px solid currentColor;opacity:.85}
+body.single .homelink{display:inline-block}
+
 /* ---------- Short notes: written on a shard of pottery, resting in the sand ---------- */
 .is-note .threshold{min-height:62vh}
 .is-note .ground{margin-top:-86px}
@@ -238,7 +286,7 @@ body.signed .quill{display:flex}
 .shard .at{position:relative;display:block;margin-top:1.1rem;font-family:"Marcellus SC",serif;letter-spacing:.24em;font-size:.76rem;color:#6e4429}
 .quiet{max-width:28rem;margin:0 auto;text-align:center;font-style:italic;font-size:1.3rem;line-height:1.6;color:var(--ink-soft)}
 
-@media (max-width:720px){.river{display:none}.threshold{min-height:80vh}
+@media (max-width:720px){.river{display:none}.threshold{min-height:40vh}.hero .threshold{min-height:58vh;min-height:58svh}
   .illuminated article{border-width:26px;padding:1.2rem .7rem 1rem}}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
@@ -299,11 +347,17 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
 <div id="sun"></div>
 <div id="moon"></div>
 
+<div class="sharemenu" id="sharemenu" role="menu">
+  <button data-act="facebook" role="menuitem"><svg viewBox="0 0 24 24"><path fill="#1877f2" d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9V12h3.4l-.5 3.5h-2.9v8.4A12 12 0 0 0 24 12z"/></svg>Share on Facebook</button>
+  <button data-act="copy" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="#7a6248" stroke-width="1.8" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>Copy the link</button>
+</div>
+<div class="copied" id="copied">Link copied — pass it on</div>
+
 <a class="chip" href="#top" aria-label="Back to the beginning"><span class="ar hold">واحة</span>Wāḥa</a>
 <nav class="river" aria-label="Pieces"></nav>
 
 <!-- Only appears once a writer has signed in on this device -->
-<a class="quill" id="quill" href="waha-editor.html" data-author="amir"><svg><use id="quillSeal" href="#seal-amir"/></svg>Write</a>
+<a class="quill" id="quill" href="/waha-editor.html" data-author="amir"><svg><use id="quillSeal" href="#seal-amir"/></svg>Write</a>
 
 <!-- The writers' entrance (press and hold the Arabic wordmark) -->
 <div class="gate" id="gate" role="dialog" aria-modal="true" aria-label="Writers' entrance">
@@ -338,10 +392,9 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
     <div class="heading">
       <div><span class="ar hold" lang="ar">واحة</span></div>
       <h1 class="wordmark">Wāḥa</h1>
+      <a class="homelink" href="/">Wander the whole oasis →</a>
       <p class="byline">The writings of
-        <span class="who amir"><svg><use href="#seal-amir"/></svg>Amir</span>,
-        <span class="who simi"><svg><use href="#seal-simi"/></svg>Simi</span> &amp;
-        <span class="who mike"><svg><use href="#seal-mike"/></svg>Mike</span></p>
+        <span class="names"><span class="who amir"><svg><use href="#seal-amir"/></svg>Amir</span><span class="who simi"><svg><use href="#seal-simi"/></svg>Simi</span><span class="who mike"><svg><use href="#seal-mike"/></svg>Mike</span></span></p>
     </div>
   </div>
   <div class="pool">
@@ -352,7 +405,7 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
   <div class="ground">
     <svg class="edge" viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0 90 V52 C220 18 420 26 640 46 C860 66 1080 22 1440 40 V90 Z"/></svg>
     <div class="page">
-      <p class="epigraph">Three voices, one oasis. Pieces sealed with the palm in <em class="g">gold</em> are Amir's, the lotus in <em class="l">lapis</em> is Simi's, and the reed in <em class="c">carnelian</em> is Mike's. The newest rises with first light. The older ones wait further on, deeper into the day, until the stars.</p>
+      <p class="epigraph">Three voices, one oasis. The palm in <em class="g">gold</em> is Amir, the lotus in <em class="l">lapis</em> is Simi, and the reed in <em class="c">carnelian</em> is Mike.</p>
       <a class="cue" href="#s1" id="cue">Walk toward the water<i></i></a>
     </div>
     <svg class="edge bottom" viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0 0 H1440 V38 C1180 80 960 18 720 50 C480 82 250 26 0 62 Z"/></svg>
@@ -367,7 +420,6 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
   <div class="threshold">
     <div class="horizon" data-palms="both"></div>
     <div class="heading">
-      <p class="when">Deep Night</p>
       <h2 class="title">The Far Shore</h2>
     </div>
   </div>
@@ -376,7 +428,7 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
     <svg class="edge" viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0 90 V48 C260 24 500 34 720 50 C940 66 1180 28 1440 44 V90 Z"/></svg>
     <div class="page">
       <p>You've reached the edge of the oasis. Rest a while — or go back to where the sun is rising.</p>
-      <a class="return" href="#top">↑ Return to first light</a>
+      <a class="return" id="returnBtn" href="#top">↑ Return to the beginning</a>
       <div class="colophon">© 2026 Amir, Simi &amp; Mike · Wāḥa</div>
     </div>
   </div>
@@ -389,8 +441,6 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
 
   /* ---------- Draw the published pieces ---------- */
   const SLOTS=['dawn','morning','noon','golden','dusk','night','midnight'];
-  const SLOT_NAME={dawn:'First Light',morning:'Morning',noon:'High Sun',golden:'Late Afternoon',dusk:'Evening',night:'Nightfall',midnight:'Midnight'};
-  const DAY_NAME=['','The Second Day','The Third Day','The Fourth Day','The Fifth Day','The Sixth Day','The Seventh Day'];
   const PALMS=['left','right','both'];
   const TOPS=['M0 90 V44 C260 70 480 20 720 38 C960 56 1200 24 1440 48 V90 Z','M0 90 V30 C240 56 520 40 760 52 C1000 64 1240 28 1440 40 V90 Z',
     'M0 90 V36 C300 20 520 62 780 46 C1040 30 1240 58 1440 34 V90 Z','M0 90 V48 C220 22 460 36 700 52 C940 68 1200 30 1440 44 V90 Z',
@@ -412,17 +462,19 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
       <svg class="edge bottom" viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="${BOTS[i%BOTS.length]}"/></svg>
     </div>`;
 
+  const SHARE_ICON='<svg viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5"/><path d="M8 11H6.5A1.5 1.5 0 0 0 5 12.5v6A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5v-6a1.5 1.5 0 0 0-1.5-1.5H16"/></svg>';
+  const endcap=(p,title)=>`<div class="endcap"><span class="line"></span><button class="share" data-id="${esc(p.id)}" data-title="${esc(title)}" data-writer="${esc(p.writer_name)}">${SHARE_ICON}Share this piece</button><span class="line"></span></div>`;
   function pieceHtml(p,i){
     const slot=SLOTS[i%7], day=Math.floor(i/7), d=new Date(p.published_at);
     p.w=['amir','simi','mike'].includes(p.writer)?p.writer:'amir';
-    const when=(day?`${DAY_NAME[day]||'Day '+(day+1)} · `:'')+`${SLOT_NAME[slot]} · ${fmtDate(d)}`;
+    const when=fmtDate(d);
     const id=`s${i+1}`, palms=PALMS[i%3];
     if(p.kind==='short'){
       const txt=(Array.isArray(p.body)?p.body:[]).map(spansHtml).join('<br>');
       return `<section class="station is-note" id="${id}" data-time="${slot}" data-author="${p.w}" data-title="A note from ${esc(p.writer_name)}" data-written="${esc(p.published_at)}">
   <div class="threshold"><div class="horizon" data-palms="${palms}"></div>
-    <div class="heading">${cartouche(p)}<p class="when">A Note · ${when}</p></div></div>
-  ${ground(i,`<div class="shard-wrap"><div class="shard"><div class="txt">${txt}</div><span class="at" data-at></span></div></div>`)}
+    <div class="heading"><p class="lead">A note from the hand of</p>${cartouche(p)}<p class="when">${when}</p></div></div>
+  ${ground(i,`<div class="shard-wrap"><div class="shard"><div class="txt">${txt}</div><span class="at" data-at></span></div></div>${endcap(p,'A note from '+p.writer_name)}`)}
 </section>`;
     }
     const days=(Array.isArray(p.tended_days)?p.tended_days:[]).slice().sort();
@@ -430,28 +482,33 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
     const ill=!!p.illuminated;
     return `<section class="station${ill?' illuminated':''}" id="${id}" data-time="${slot}" data-author="${p.w}" data-title="${esc(p.title)}" data-written="${esc(p.published_at)}"${ill?` data-tended="${days.length}" data-span="${esc(span)}"`:''}>
   <div class="threshold"><div class="horizon" data-palms="${palms}"></div>
-    <div class="heading">${ill?'<p class="illum-tag">Illuminated</p>':''}${cartouche(p)}<p class="when">${when}</p><h2 class="title">${esc(p.title)}</h2></div></div>
+    <div class="heading">${ill?'<p class="illum-tag">Illuminated</p>':''}<p class="lead">From the hand of</p>${cartouche(p)}<p class="when">${when}</p><h2 class="title">${esc(p.title)}</h2></div></div>
   <div class="pool"><div class="reflection" aria-hidden="true">${esc(p.title)}</div>
     <svg class="reeds ${i%2?'r':'l'}" viewBox="0 0 90 110">${REEDS}</svg></div>
   ${ground(i,`<article>
       ${blocksHtml(p.body)}
       <div class="sig"><svg><use href="#seal-${p.w}"/></svg><span class="n">${esc(p.writer_name)}</span><span class="a" lang="ar">${esc(p.writer_name_ar)}</span></div>
       ${ill?'<div class="tended"><span class="stitches"></span><span class="tended-txt"></span></div>':''}
-    </article>`)}
+    </article>${endcap(p,p.title)}`)}
 </section>`;
   }
   const quietHtml=(title,line)=>`<section class="station" id="s1" data-time="dawn" data-title="${esc(title)}">
   <div class="threshold"><div class="horizon" data-palms="both"></div>
-    <div class="heading"><p class="when">First Light</p><h2 class="title">${esc(title)}</h2></div></div>
+    <div class="heading"><h2 class="title">${esc(title)}</h2></div></div>
   <div class="pool"><div class="reflection" aria-hidden="true">${esc(title)}</div></div>
   ${ground(0,`<p class="quiet">${esc(line)}</p>`)}
 </section>`;
 
+  // a shared link looks like /p/<id> (or ?p=<id>): show just that piece
+  const SHARED=(location.pathname.match(/^\/p\/([0-9a-f-]{36})/i)||[])[1]||new URLSearchParams(location.search).get('p')||null;
+  if(SHARED) document.body.classList.add('single');
   let posts=null;
   if(db){
     try{
+      let q=db.from('feed').select('id,kind,title,body,published_at,illuminated,tended_days,writer,writer_name,writer_name_ar,seal').order('published_at',{ascending:false});
+      if(SHARED) q=q.eq('id',SHARED);
       const res=await Promise.race([
-        db.from('feed').select('id,kind,title,body,published_at,illuminated,tended_days,writer,writer_name,writer_name_ar,seal').order('published_at',{ascending:false}),
+        q,
         new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),9000))]);
       if(res.error) throw res.error;
       posts=res.data||[];
@@ -459,8 +516,15 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
   }
   const holder=document.getElementById('pieces');
   if(posts===null) holder.innerHTML=quietHtml('The Path Is Hidden','The sand has drifted over the path for a moment. Try again shortly, and the water will be where you left it.');
-  else if(!posts.length) holder.innerHTML=quietHtml('The Water Is Still','The first piece hasn’t been released yet. Come back at first light.');
+  else if(!posts.length) holder.innerHTML=SHARED?quietHtml('This Piece Has Drifted Away','Its writer may have taken it back into the sand. There is more to read in the oasis.')
+    :quietHtml('The Water Is Still','The first piece hasn’t been released yet. Come back at first light.');
   else holder.innerHTML=posts.map(pieceHtml).join('\n');
+  if(SHARED){
+    const p=posts&&posts[0];
+    if(p) document.title=(p.kind==='short'?'A note from '+p.writer_name:p.title)+' — '+p.writer_name+' · Wāḥa';
+    const rb=document.getElementById('returnBtn'); rb.href='/'; rb.textContent='Wander the whole oasis →';
+    const cue=document.getElementById('cue'); if(cue) cue.href='#s1';
+  }
   holder.replaceWith(...holder.childNodes);   // stations sit directly in the page, like before
   if (reduce) document.querySelectorAll('animate').forEach(a => a.remove());
 
@@ -573,6 +637,39 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
     {threshold:.15,rootMargin:'0px 0px -6% 0px'});
   document.querySelectorAll('.heading, .page article > *').forEach(el=>io.observe(el));
 
+  /* ---------- Sharing: the phone's own share sheet, or Facebook / copy link ---------- */
+  const menu=document.getElementById('sharemenu'), copied=document.getElementById('copied');
+  let shareFor=null;
+  const shareUrl=id=>location.origin+'/p/'+id;
+  const closeMenu=()=>{ menu.classList.remove('open'); shareFor=null; };
+  function flashCopied(t){ copied.textContent=t; copied.classList.add('show'); clearTimeout(flashCopied.t); flashCopied.t=setTimeout(()=>copied.classList.remove('show'),2200); }
+  async function copy(url){
+    try{ await navigator.clipboard.writeText(url); }
+    catch(e){ const ta=document.createElement('textarea'); ta.value=url; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(_){} ta.remove(); }
+    flashCopied('Link copied — pass it on');
+  }
+  document.addEventListener('click',async e=>{
+    const b=e.target.closest('.share');
+    if(!b){ if(!e.target.closest('#sharemenu')) closeMenu(); return; }
+    e.preventDefault();
+    const url=shareUrl(b.dataset.id), title=b.dataset.title, text='From the hand of '+b.dataset.writer+' · Wāḥa';
+    if(navigator.share&&matchMedia('(pointer:coarse)').matches){ try{ await navigator.share({title,text,url}); }catch(_){} return; }
+    if(shareFor===b){ closeMenu(); return; }
+    shareFor=b; menu.dataset.url=url;
+    const r=b.getBoundingClientRect(), mw=Math.max(menu.offsetWidth,240), mh=menu.offsetHeight||110;
+    menu.style.left=Math.max(12,Math.min(innerWidth-mw-12,r.left+r.width/2-mw/2))+'px';
+    menu.style.top=(r.top>mh+20?r.top-mh-10:r.bottom+10)+'px';
+    menu.classList.add('open');
+  });
+  menu.addEventListener('click',e=>{
+    const a=e.target.closest('button'); if(!a) return; const url=menu.dataset.url;
+    if(a.dataset.act==='facebook') window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url),'fbshare','width=620,height=560,noopener');
+    else copy(url);
+    closeMenu();
+  });
+  addEventListener('scroll',closeMenu,{passive:true});
+  addEventListener('keydown',e=>{ if(e.key==='Escape') closeMenu(); });
+
   /* ---------- The writers' secret entrance ---------- */
   const store={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
   const NAMES={amir:'Amir',simi:'Simi',mike:'Mike'};
@@ -596,7 +693,7 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
     gate.classList.add('open');
   }
   const closeGate=()=>gate.classList.remove('open');
-  const go=()=>{ location.href='waha-editor.html'; };
+  const go=()=>{ location.href='/waha-editor.html'; };
   document.querySelectorAll('.seal').forEach(b=>b.addEventListener('click',()=>{ pick(b.dataset.w); key.focus(); }));
   const enterBtn=document.getElementById('enter');
   let entering=false;
