@@ -10,11 +10,12 @@
 <style>
 :root{
   --ink:#3a2a1c; --ink-soft:#7a6248; --sand:#f3e5c9;
-  --gold:#b0802b; --gold-light:#dcb766; --lapis:#2b6a8a; --lapis-light:#86c0d8;
+  --gold:#b0802b; --gold-light:#dcb766; --lapis:#2b6a8a; --lapis-light:#86c0d8; --carnelian:#b5532f; --carnelian-light:#e59a76;
   --hand:var(--gold); --hand-light:var(--gold-light);
   --rail-w:46px;
 }
 body[data-author=simi]{--hand:var(--lapis);--hand-light:var(--lapis-light)}
+body[data-author=mike]{--hand:var(--carnelian);--hand-light:var(--carnelian-light)}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--sand)}
 html{touch-action:manipulation}
@@ -346,6 +347,7 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
       <path d="M74 66 C52 64 28 76 12 102 C32 82 52 74 72 70 Z"/><path d="M74 62 C76 40 72 22 64 4 C80 22 82 42 78 64 Z"/><ellipse cx="74" cy="70" rx="7" ry="5"/>
     </symbol>
     <symbol id="seal-amir" viewBox="0 0 140 220"><use href="#palm"/></symbol>
+    <symbol id="seal-mike" viewBox="0 0 60 80"><path d="M28.6 80 C29.4 64 28.8 48 29.2 34 L30.8 34 C31.2 48 30.6 64 31.4 80Z"/><path d="M29 35 L3.7 27.9 L5.1 23.5 L31 35Z"/><path d="M29 35 L6.4 20.9 L9.0 17.0 L31 35Z"/><path d="M29 35 L10.9 14.9 L14.5 11.9 L31 35Z"/><path d="M29 35 L16.9 10.4 L21.2 8.5 L31 35Z"/><path d="M29 35 L23.9 7.7 L28.6 7.0 L31 35Z"/><path d="M29 35 L31.4 7.0 L36.1 7.7 L31 35Z"/><path d="M29 35 L38.8 8.5 L43.1 10.4 L31 35Z"/><path d="M29 35 L45.5 11.9 L49.1 14.9 L31 35Z"/><path d="M29 35 L51.0 17.0 L53.6 20.9 L31 35Z"/><path d="M29 35 L54.9 23.5 L56.3 27.9 L31 35Z"/><path opacity=".55" d="M30 4 C22 10 14 12 6 18 C16 16 24 14 30 12 C36 14 44 16 54 18 C46 12 38 10 30 4Z"/><ellipse cx="30" cy="35" rx="3.2" ry="2.4"/></symbol>
     <symbol id="seal-simi" viewBox="0 0 68 48">
       <path d="M34 2 C41 14 41 30 34 42 C27 30 27 14 34 2 Z"/><path opacity=".85" d="M34 42 C26 32 18 22 6 18 C10 30 20 40 34 42 Z"/>
       <path opacity=".85" d="M34 42 C42 32 50 22 62 18 C58 30 48 40 34 42 Z"/><path opacity=".6" d="M34 42 C22 38 10 36 0 38 C10 44 22 46 34 42 Z"/>
@@ -493,7 +495,7 @@ const editing=()=>!TOUCH||B.classList.contains('editing');
 function setEditable(on){ editables.forEach(e=>e.contentEditable=on?'true':'false'); B.classList.toggle('editing',on&&TOUCH); }
 
 /* ---------- Writers ---------- */
-const WRITERS={amir:{name:'Amir',ar:'أمير'},simi:{name:'Simi',ar:'سيمي'}};
+const WRITERS={amir:{name:'Amir',ar:'أمير'},simi:{name:'Simi',ar:'سيمي'},mike:{name:'Mike',ar:'مايك'}};
 function setAuthor(a){
   B.dataset.author=a; const w=WRITERS[a];
   $('whoName').textContent=w.name; $('whoAr').textContent=w.ar; $('whoSeal').innerHTML=`<use href="#seal-${a}"/>`;
@@ -565,7 +567,7 @@ function skyGlyph(d){
 
 /* ---------- Supabase: where every piece lives ---------- */
 const sb=window.wahaDB;
-const LOGIN={amir:'amir@waha.local',simi:'simi@waha.local'};
+const LOGIN={amir:'amir@waha.local',simi:'simi@waha.local',mike:'mike@waha.local'};
 const writerFor=email=>Object.keys(LOGIN).find(k=>LOGIN[k]===String(email||'').toLowerCase())||null;
 const COLS='id,kind,status,title,body,revision,created_at,updated_at,published_at,tended_days,illuminated';
 let me=null, cache=[];
@@ -1161,7 +1163,7 @@ if(TOUCH){
   },{passive:false});
 }
 
-/* ---------- Opening: only Amir and Simi get past this point ---------- */
+/* ---------- Opening: only the writers get past this point ---------- */
 function lock(title,text,action){
   $('lock').hidden=false; $('lockT').textContent=title; $('lockP').textContent=text||''; $('lockP').hidden=!text;
   $('lockSpin').hidden=!!action; $('lockAct').innerHTML=action||'';

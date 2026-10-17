@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Wāḥa — Amir &amp; Simi</title>
+<title>Wāḥa — Amir, Simi &amp; Mike</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Marcellus&family=Marcellus+SC&display=swap" rel="stylesheet">
@@ -13,6 +13,7 @@
   --ink:#3a2a1c; --ink-soft:#6e5741;
   --gold:#b0802b; --gold-light:#dcb766;
   --lapis:#2b6a8a; --lapis-light:#86c0d8;
+  --carnelian:#b5532f; --carnelian-light:#e59a76;
   --sand:#f1e4c6;
   --hand:var(--gold); --hand-light:var(--gold-light);
 }
@@ -23,6 +24,7 @@ body{font-family:"Cormorant Garamond",Georgia,serif;color:var(--ink);background:
 /* ---------- Authors: each voice has its own seal & ink ---------- */
 [data-author=amir]{--hand:var(--gold);--hand-light:var(--gold-light)}
 [data-author=simi]{--hand:var(--lapis);--hand-light:var(--lapis-light)}
+[data-author=mike]{--hand:var(--carnelian);--hand-light:var(--carnelian-light)}
 
 /* ---------- Living sky ---------- */
 #sky{position:fixed;inset:0;z-index:0;background:linear-gradient(to bottom,var(--sky-top) 0%,var(--sky-bot) 100%)}
@@ -151,10 +153,11 @@ article blockquote::before{top:0}article blockquote::after{top:100%}
 .byline svg{width:20px;height:20px}
 .byline .amir svg{fill:var(--gold-light);color:var(--gold-light)}
 .byline .simi svg{fill:var(--lapis-light);color:var(--lapis-light)}
+.byline .mike svg{fill:var(--carnelian-light);color:var(--carnelian-light)}
 .hero .reflection{font-family:Amiri,serif;font-weight:700;font-size:clamp(3rem,9vw,6.5rem);color:var(--gold-light);opacity:.35;max-width:none}
 .epigraph{max-width:31rem;margin:0 auto;text-align:center;font-style:italic;font-size:clamp(1.2rem,2.3vw,1.4rem);line-height:1.6;color:var(--ink-soft)}
 .epigraph em{font-style:normal;font-family:"Marcellus SC",serif;letter-spacing:.12em;font-size:.82em}
-.epigraph .g{color:var(--gold)}.epigraph .l{color:var(--lapis)}
+.epigraph .g{color:var(--gold)}.epigraph .l{color:var(--lapis)}.epigraph .c{color:var(--carnelian)}
 .cue{display:flex;flex-direction:column;align-items:center;gap:.7rem;margin-top:2rem;font-family:"Marcellus SC",serif;letter-spacing:.3em;font-size:.85rem;color:var(--gold);text-decoration:none}
 .cue i{width:1px;height:46px;background:linear-gradient(var(--gold),transparent);animation:cue 2.4s ease-in-out infinite;transform-origin:top}
 @keyframes cue{0%{transform:scaleY(0);opacity:1}70%{transform:scaleY(1);opacity:1}100%{transform:scaleY(1);opacity:0}}
@@ -183,7 +186,7 @@ article blockquote::before{top:0}article blockquote::after{top:100%}
 .gate .ar{font-family:Amiri,serif;font-weight:700;font-size:2.3rem;color:var(--gold);line-height:1}
 .gate h3{font-family:"Marcellus",serif;font-weight:400;font-size:1.6rem;margin:.4rem 0 0}
 .gate .x{position:absolute;top:10px;right:12px;border:none;background:none;font-size:1.6rem;color:var(--ink-soft);cursor:pointer;padding:.2rem .5rem}
-.seals{display:flex;gap:12px;margin:1.3rem 0 1rem}
+.seals{display:flex;gap:10px;margin:1.3rem 0 1rem}
 .seal{flex:1;display:flex;flex-direction:column;align-items:center;gap:.4rem;padding:1rem .5rem;border-radius:16px;cursor:pointer;color:var(--ink);
   background:transparent;border:1.5px solid color-mix(in srgb,var(--c) 35%,transparent);font-family:"Marcellus SC",serif;letter-spacing:.2em;font-size:.9rem;transition:all .3s}
 .seal svg{width:40px;height:40px;fill:var(--c);color:var(--c)}
@@ -275,6 +278,8 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
       <ellipse cx="74" cy="70" rx="7" ry="5"/>
     </symbol>
     <symbol id="seal-amir" viewBox="0 0 140 220"><use href="#palm"/></symbol>
+    <!-- Mike's seal: the papyrus reed, the scribe's pen -->
+    <symbol id="seal-mike" viewBox="0 0 60 80"><path d="M28.6 80 C29.4 64 28.8 48 29.2 34 L30.8 34 C31.2 48 30.6 64 31.4 80Z"/><path d="M29 35 L3.7 27.9 L5.1 23.5 L31 35Z"/><path d="M29 35 L6.4 20.9 L9.0 17.0 L31 35Z"/><path d="M29 35 L10.9 14.9 L14.5 11.9 L31 35Z"/><path d="M29 35 L16.9 10.4 L21.2 8.5 L31 35Z"/><path d="M29 35 L23.9 7.7 L28.6 7.0 L31 35Z"/><path d="M29 35 L31.4 7.0 L36.1 7.7 L31 35Z"/><path d="M29 35 L38.8 8.5 L43.1 10.4 L31 35Z"/><path d="M29 35 L45.5 11.9 L49.1 14.9 L31 35Z"/><path d="M29 35 L51.0 17.0 L53.6 20.9 L31 35Z"/><path d="M29 35 L54.9 23.5 L56.3 27.9 L31 35Z"/><path opacity=".55" d="M30 4 C22 10 14 12 6 18 C16 16 24 14 30 12 C36 14 44 16 54 18 C46 12 38 10 30 4Z"/><ellipse cx="30" cy="35" rx="3.2" ry="2.4"/></symbol>
     <!-- Simi's seal: the lotus -->
     <symbol id="seal-simi" viewBox="0 0 68 48">
       <path d="M34 2 C41 14 41 30 34 42 C27 30 27 14 34 2 Z"/>
@@ -310,6 +315,7 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
       <div class="seals">
         <button class="seal on" data-w="amir" style="--c:var(--gold)"><svg><use href="#seal-amir"/></svg>Amir</button>
         <button class="seal" data-w="simi" style="--c:var(--lapis)"><svg><use href="#seal-simi"/></svg>Simi</button>
+        <button class="seal" data-w="mike" style="--c:var(--carnelian)"><svg><use href="#seal-mike"/></svg>Mike</button>
       </div>
       <input class="key" id="key" type="password" placeholder="Your key" autocomplete="current-password">
       <p class="err" id="err"></p>
@@ -333,8 +339,9 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
       <div><span class="ar hold" lang="ar">واحة</span></div>
       <h1 class="wordmark">Wāḥa</h1>
       <p class="byline">The writings of
-        <span class="who amir"><svg><use href="#seal-amir"/></svg>Amir</span> &amp;
-        <span class="who simi"><svg><use href="#seal-simi"/></svg>Simi</span></p>
+        <span class="who amir"><svg><use href="#seal-amir"/></svg>Amir</span>,
+        <span class="who simi"><svg><use href="#seal-simi"/></svg>Simi</span> &amp;
+        <span class="who mike"><svg><use href="#seal-mike"/></svg>Mike</span></p>
     </div>
   </div>
   <div class="pool">
@@ -345,7 +352,7 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
   <div class="ground">
     <svg class="edge" viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0 90 V52 C220 18 420 26 640 46 C860 66 1080 22 1440 40 V90 Z"/></svg>
     <div class="page">
-      <p class="epigraph">Two voices, one oasis. Pieces sealed with the palm in <em class="g">gold</em> are Amir's; those sealed with the lotus in <em class="l">lapis</em> are Simi's. The newest rises with first light. The older ones wait further on, deeper into the day, until the stars.</p>
+      <p class="epigraph">Three voices, one oasis. Pieces sealed with the palm in <em class="g">gold</em> are Amir's, the lotus in <em class="l">lapis</em> is Simi's, and the reed in <em class="c">carnelian</em> is Mike's. The newest rises with first light. The older ones wait further on, deeper into the day, until the stars.</p>
       <a class="cue" href="#s1" id="cue">Walk toward the water<i></i></a>
     </div>
     <svg class="edge bottom" viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0 0 H1440 V38 C1180 80 960 18 720 50 C480 82 250 26 0 62 Z"/></svg>
@@ -370,7 +377,7 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
     <div class="page">
       <p>You've reached the edge of the oasis. Rest a while — or go back to where the sun is rising.</p>
       <a class="return" href="#top">↑ Return to first light</a>
-      <div class="colophon">© 2026 Amir &amp; Simi · Wāḥa</div>
+      <div class="colophon">© 2026 Amir, Simi &amp; Mike · Wāḥa</div>
     </div>
   </div>
 </footer>
@@ -407,7 +414,7 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
 
   function pieceHtml(p,i){
     const slot=SLOTS[i%7], day=Math.floor(i/7), d=new Date(p.published_at);
-    p.w=p.seal==='lotus'?'simi':(p.writer==='simi'?'simi':'amir');
+    p.w=['amir','simi','mike'].includes(p.writer)?p.writer:'amir';
     const when=(day?`${DAY_NAME[day]||'Day '+(day+1)} · `:'')+`${SLOT_NAME[slot]} · ${fmtDate(d)}`;
     const id=`s${i+1}`, palms=PALMS[i%3];
     if(p.kind==='short'){
@@ -568,8 +575,8 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
 
   /* ---------- The writers' secret entrance ---------- */
   const store={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
-  const NAMES={amir:'Amir',simi:'Simi'};
-  const LOGIN={amir:'amir@waha.local',simi:'simi@waha.local'};          // the private logins created in Supabase
+  const NAMES={amir:'Amir',simi:'Simi',mike:'Mike'};
+  const LOGIN={amir:'amir@waha.local',simi:'simi@waha.local',mike:'mike@waha.local'};          // the private logins created in Supabase
   const writerFor=email=>Object.keys(LOGIN).find(k=>LOGIN[k]===String(email||'').toLowerCase())||null;
   const gate=document.getElementById('gate'), key=document.getElementById('key'), err=document.getElementById('err');
   const quill=document.getElementById('quill');
