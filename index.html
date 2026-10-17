@@ -248,7 +248,7 @@ body.signed .quill{display:flex}
 <script>
 // Supabase configuration
 const SUPABASE_URL = 'https://qddvifhkrynjbdxuvhvx.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFkZHZpZmhrcnluamJkeHV2aHZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5NzE2MzMsImV4cCI6MjA3NzU0NzYzM30.xwG3kZu9VQTy_pEzlVfRY8NrOX5mTlgVHq2eivWUIWI';
+const SUPABASE_KEY = 'sb_publishable_8Boi1cyqkmt93NfKXoyJJg_ljW-sYjz';
 window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 </script>
 </head>
@@ -601,7 +601,11 @@ window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUP
     const {error}=await db.auth.signInWithPassword({email:LOGIN[chosen],password:key.value});
     entering=false; enterBtn.textContent='Step inside';
     if(error){
-      err.textContent=/rate|many/i.test(error.message||'')?'Too many tries \u2014 rest a moment, then try again.':'That key doesn\u2019t open the garden.';
+      const msg=error.message||'';
+      console.error('Sign-in failed:',error);
+      err.textContent=/rate|many/i.test(msg)?'Too many tries \u2014 rest a moment, then try again.'
+        :/invalid login credentials/i.test(msg)?'That key doesn\u2019t open the garden.'
+        :'Couldn\u2019t sign in: '+msg;                            // show anything unexpected so it can be fixed
       key.select(); return;
     }
     store.set('waha-writer',chosen); store.set('waha-author',chosen); refresh(); go();
