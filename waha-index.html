@@ -229,6 +229,13 @@ body.signed .quill{display:flex}
   .reflection{filter:none}
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// Supabase configuration
+const SUPABASE_URL = 'https://qddvifhkrynjbdxuvhvx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFkZHZpZmhrcnluamJkeHV2aHZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5NzE2MzMsImV4cCI6MjA3NzU0NzYzM30.xwG3kZu9VQTy_pEzlVfRY8NrOX5mTlgVHq2eivWUIWI';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
 </head>
 <body>
 
