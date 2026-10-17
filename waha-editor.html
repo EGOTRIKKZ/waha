@@ -238,6 +238,29 @@ body.preview .nudge,body.preview .linemark{display:none}
 .pc-confirm button{border:none;border-radius:999px;padding:.4rem .9rem;font-family:"Marcellus SC",serif;letter-spacing:.12em;font-size:.74rem;cursor:pointer}
 .pc-confirm .yes{background:#a4483a;color:#fff}
 .pc-confirm .no{background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--ink)}
+.psearch{width:100%;padding:.75rem 1rem .75rem 2.5rem;border-radius:12px;border:1px solid color-mix(in srgb,var(--hand) 30%,transparent);
+  background:rgba(255,250,238,.85) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a6248' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='6.5'/><path d='M16 16l4.5 4.5'/></svg>") no-repeat .85rem center/18px;
+  font:inherit;font-size:1.08rem;color:var(--ink);outline:none;margin-bottom:10px;-webkit-appearance:none;appearance:none}
+.psearch:focus{border-color:var(--hand)}
+.pfilters{display:flex;gap:6px;overflow-x:auto;padding:1px 1px 10px;scrollbar-width:none;flex:none}
+.pfilters::-webkit-scrollbar{display:none}
+.pfilters button{flex:none;border:1px solid color-mix(in srgb,var(--hand) 30%,transparent);background:transparent;border-radius:999px;padding:.4rem .8rem;
+  font-family:"Marcellus SC",serif;letter-spacing:.1em;font-size:.74rem;color:var(--ink-soft);cursor:pointer;white-space:nowrap}
+.pfilters button i{font-style:normal;opacity:.6;margin-left:.3rem}
+.pfilters button.on{background:var(--hand);border-color:var(--hand);color:#fff8ea}
+.pmonth{position:sticky;top:-3px;z-index:2;margin:6px -3px 0;padding:.45rem .3rem .35rem;background:var(--sand);
+  font-family:"Marcellus SC",serif;letter-spacing:.22em;font-size:.76rem;color:var(--hand);display:flex;align-items:center;gap:.6rem}
+.pmonth::after{content:"";flex:1;height:1px;background:color-mix(in srgb,var(--hand) 30%,transparent)}
+.pc-date{font-style:normal;font-family:"Marcellus SC",serif;letter-spacing:.08em;font-size:.74rem;color:var(--hand);margin-right:.45rem;vertical-align:1px}
+.lock{position:fixed;inset:0;z-index:95;display:grid;place-items:center;padding:16px;background:var(--sand);text-align:center}
+.lock[hidden]{display:none}
+.lock .ar{font-family:Amiri,serif;font-weight:700;font-size:2.6rem;color:var(--gold);line-height:1}
+.lock h2{font-family:"Marcellus",serif;font-weight:400;font-size:1.7rem;margin:.6rem 0 .5rem}
+.lock p{font-style:italic;color:var(--ink-soft);font-size:1.15rem;line-height:1.5;max-width:22rem;margin:0 auto 1.4rem}
+.lock a,.lock button{display:inline-block;border:none;border-radius:999px;padding:.85rem 1.5rem;background:var(--gold);color:#fff8ea;text-decoration:none;cursor:pointer;
+  font-family:"Marcellus SC",serif;letter-spacing:.2em;font-size:.86rem}
+.lock .spin{width:26px;height:26px;margin:1.2rem auto 0;border-radius:50%;border:2px solid rgba(176,128,43,.25);border-top-color:var(--gold);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 .drawer .soft{align-self:center;margin-top:.4rem;border:none;background:none;font:inherit;font-style:italic;color:var(--ink-soft);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 
 /* ---------- Status & growth (the two safeguards live here) ---------- */
@@ -300,10 +323,10 @@ body.illum-pv .ill-tag{display:flex}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// Supabase configuration
+// Supabase connection (the publishable/anon key is safe in page code; the database rules protect everything)
 const SUPABASE_URL = 'https://qddvifhkrynjbdxuvhvx.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFkZHZpZmhrcnluamJkeHV2aHZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5NzE2MzMsImV4cCI6MjA3NzU0NzYzM30.xwG3kZu9VQTy_pEzlVfRY8NrOX5mTlgVHq2eivWUIWI';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+window.wahaDB = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 </script>
 </head>
 <body data-author="amir">
@@ -352,7 +375,7 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 <div class="chips">
   <div class="left">
     <a class="home glass" href="index.html" aria-label="Back to the oasis" title="Back to the oasis">واحة</a>
-    <button class="who glass" id="who" title="Your pieces">
+    <button class="who glass" id="who" title="Your pieces" aria-label="Your pieces">
       <svg id="whoSeal"><use href="#seal-amir"/></svg><small>Writing as</small><span class="n" id="whoName">Amir</span><span class="a" id="whoAr">أمير</span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
     </button>
   </div>
@@ -438,6 +461,10 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 <div class="toast" id="toast"><svg><use class="sealUse" href="#seal-amir"/></svg><p id="toastP">Released into the oasis</p><small id="toastS">It rises at first light, and the others move deeper into the day.</small><em id="toastE"></em></div>
 
+<div class="lock" id="lock" role="dialog" aria-modal="true">
+  <div><div class="ar" lang="ar">واحة</div><h2 id="lockT">Opening your pieces…</h2><p id="lockP"></p><div class="spin" id="lockSpin"></div><span id="lockAct"></span></div>
+</div>
+
 <div class="scrim" id="scrim"></div>
 <aside class="drawer" id="drawer" aria-label="Your pieces">
   <div class="dh">
@@ -446,8 +473,10 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     <button class="x" id="dX" aria-label="Close">×</button>
   </div>
   <button class="newp" id="newPiece"><svg><use href="#i-plus"/></svg>Start a new piece</button>
+  <input class="psearch" id="psearch" type="search" placeholder="Search titles and words" autocomplete="off" enterkeyhint="search">
+  <div class="pfilters" id="pfilters" role="tablist" aria-label="Show"></div>
   <div class="plist" id="plist"></div>
-  <button class="soft" id="switchW">Switch writer (demo only)</button>
+  <button class="soft" id="signOutBtn">Sign out on this device</button>
 </aside>
 
 <script>
@@ -534,32 +563,37 @@ function skyGlyph(d){
   return `<svg class="skyg" viewBox="0 0 40 24" aria-hidden="true"><path d="M5 19A15 15 0 0 1 35 19" fill="none" stroke="currentColor" stroke-width=".9" stroke-dasharray="1.2 2.4" opacity=".55"/><path d="M1 19.5H39" stroke="currentColor" stroke-width=".9" opacity=".7"/>${orb}</svg>`;
 }
 
-/* A tiny local stand-in for Supabase, so the whole loop can be felt before it's wired up */
+/* ---------- Supabase: where every piece lives ---------- */
+const sb=window.wahaDB;
+const LOGIN={amir:'amir@waha.local',simi:'simi@waha.local'};
+const writerFor=email=>Object.keys(LOGIN).find(k=>LOGIN[k]===String(email||'').toLowerCase())||null;
+const COLS='id,kind,status,title,body,revision,created_at,updated_at,published_at,tended_days,illuminated';
+let me=null, cache=[];
+const fromRow=r=>Object.assign(r,{writer:me.writer,title:r.title||'',body:Array.isArray(r.body)?r.body:[],tended_days:Array.isArray(r.tended_days)?r.tended_days:[]});
 const DB={
-  all(){ try{ return JSON.parse(localStorage.getItem('waha-posts')||'[]'); }catch(e){ return []; } },
-  write(list){ try{ localStorage.setItem('waha-posts',JSON.stringify(list)); return true; }catch(e){ return false; } },
-  mine(w){ return this.all().filter(p=>p.writer===w).sort((a,b)=>(b.updated_at||'').localeCompare(a.updated_at||'')); },
-  get(id){ return this.all().find(p=>p.id===id)||null; },
-  put(p){ const l=this.all(), i=l.findIndex(x=>x.id===p.id); if(i<0) l.push(p); else l[i]=p; return this.write(l); },
-  del(id){ return this.write(this.all().filter(p=>p.id!==id)); }
+  async load(){
+    const {data,error}=await sb.from('posts').select(COLS).eq('writer_id',me.uid).order('updated_at',{ascending:false});
+    if(error) throw error; cache=(data||[]).map(fromRow); return cache;
+  },
+  mine(){ return cache; },
+  get(id){ return cache.find(p=>p.id===id)||null; },
+  async put(p){
+    const row={kind:p.kind,status:p.status,title:p.title||null,body:p.body,revision:p.revision||null,tended_days:p.tended_days};
+    const q=p.id?sb.from('posts').update(row).eq('id',p.id):sb.from('posts').insert({...row,writer_id:me.uid});
+    const {data,error}=await q.select('id,created_at,updated_at,published_at,illuminated,status').single();
+    if(error) throw error;
+    Object.assign(p,data);                                   // the database's word on id, dates and Illuminated
+    if(!cache.includes(p)) cache.unshift(p);
+    return p;
+  },
+  async del(id){ const {error}=await sb.from('posts').delete().eq('id',id); if(error) throw error; cache=cache.filter(p=>p.id!==id); }
 };
-(function seed(){
-  if(store.get('waha-seeded-v3')) return;
-  const SEED={"amir": [{"title": "The Well Remembers", "kind": "long", "status": "published", "body": [{"type": "p", "opening": true, "spans": [{"t": "My grandmother used to say that a well is the only thing in the desert with a memory. Everything else forgets. The wind forgets which way it came. The dunes forget their own shapes by morning. But the well remembers every rope ever lowered into it, every face that ever leaned over its edge looking for a reflection."}]}, {"type": "p", "spans": [{"t": "I went back this year. The village has electricity now, and a pharmacy, and a boy who sells phone credit from a folding table under the acacia. But the well is still there, ringed in stone worn smooth as soap by a hundred years of hands."}]}, {"type": "quote", "spans": [{"t": "We do not drink water. We drink the patience of the earth."}]}, {"type": "p", "spans": [{"t": "I lowered the bucket the way she taught me — slowly, so the water has time to decide it wants to come up. When it broke the surface I swear I heard it: not a splash, but something closer to a name."}]}, {"type": "p", "break": true, "spans": [{"t": "I am writing this at dawn, before the heat arrives, because this is the hour the oasis tells the truth. The palms are still blue. The water hasn't decided what color to be yet. And somewhere underneath all of it, the well is keeping track."}]}], "days": [1, 0], "pub": [0, 5, 42]}, {"title": "The Ferryman’s Daughter", "kind": "long", "status": "draft", "body": [{"type": "p", "spans": [{"t": "The ferry across the canal costs two pounds, or a story if you’re short on change. I have paid in both."}]}, {"type": "p", "spans": [{"t": "The ferryman is a quiet man named Yusuf, and his daughter does all the talking for him. She collects the fares, tells you where you’re going before you say it, and corrects his directions to tourists with the weary patience of a schoolteacher."}]}, {"type": "p", "spans": [{"t": "“Water doesn’t care who rows. Only that someone does.”"}]}, {"type": "p", "spans": [{"t": "She said it without looking up from counting coins. I think about it every time I sit down to write."}]}], "days": [2, 1], "upd": [1, 22, 10]}, {"title": "The Long Water", "kind": "long", "status": "draft", "body": [{"type": "p", "opening": true, "spans": [{"t": "There is a story they tell in the oasis about a man who tried to follow the spring back to where it began. He was not a scholar or a holy man. He was a date farmer with a bad knee and a stubborn heart, and one summer, when the water in his channel ran thinner than it had in forty years, he decided that he was owed an explanation."}]}, {"type": "p", "spans": [{"t": "He started at his own field, where the water arrived each morning through a ditch no wider than his forearm. He followed the ditch to the main channel, and the main channel to the pool beneath the old palms, where the women washed clothes and the boys dared each other to touch the bottom. From there the water came up out of the ground itself, cold and clear, from a crack in the limestone no one had ever thought to question."}]}, {"type": "p", "spans": [{"t": "So he questioned it. He knelt at the edge of the spring and put his ear to the stone, the way his father used to listen to the chest of a sick goat. He heard something — a hum, a movement, a sound like a crowd very far away — and he understood, the way you understand things at the end of a long day, that the water was not born here. It was only "}, {"t": "arriving", "i": true}, {"t": "."}]}, {"type": "p", "break": true, "spans": [{"t": "I first heard this story from my grandmother, and I have heard it a dozen times since, from a dozen people, and no two of them agree on how it ends. That is part of why I have been writing it down. Not to settle it. To keep all the endings in one place."}]}, {"type": "p", "spans": [{"t": "In my grandmother's version, the farmer walks west. He takes a skin of water, a bag of dates, and a walking stick cut from a tamarisk, and he walks into the open desert with nothing but the hum in his ears to guide him. Every night he lies down and presses his ear to the sand, and every night the sound is a little closer, a little louder, until on the seventh night it is so loud he cannot sleep."}]}, {"type": "p", "spans": [{"t": "On the eighth morning he comes to a place where the sand is darker than it should be, and cool to the touch, and he digs with his hands until his fingers bleed. A foot down, the sand is damp. Two feet down, it is wet. Three feet down, he finds water moving — not standing, "}, {"t": "moving", "i": true}, {"t": " — a river running in the dark beneath the desert, older than any city, wider than any canal."}]}, {"type": "quote", "spans": [{"t": "The spring is not the beginning. It is only the place where the long water finally lets us see it."}]}, {"type": "p", "spans": [{"t": "My grandmother always paused there, as if she were listening for the hum herself. Then she would say that the farmer sat beside his little hole for a whole day, just watching the water pass, and that when he finally walked home, he never complained about the channel again. Not because it ran fuller. Because he knew where it came from, and how far it had travelled, and how little it owed him."}]}, {"type": "p", "break": true, "spans": [{"t": "The version I heard from Hassan, who tends the palms, is less forgiving. In his telling the farmer finds the underground river and decides it should be his. He digs a trench to bring it straight to his own field, bypassing the spring, bypassing the pool, bypassing everyone. For one season he has more water than he knows what to do with. His dates are the fattest in the valley. He sells them in the city and comes home with silk for his wife."}]}, {"type": "p", "spans": [{"t": "And then the spring goes quiet. The pool shrinks to a puddle. The women stop coming to wash, and the boys stop daring each other, and the old palms begin to yellow at the tips. The whole oasis, Hassan says, held its breath, waiting to see what the farmer would do."}]}, {"type": "p", "spans": [{"t": "“What did he do?” I asked."}]}, {"type": "p", "spans": [{"t": "Hassan shrugged. “What do you think? He filled in the trench. He was greedy, not stupid.” Then he laughed so hard he had to sit down, and I never found out if he was joking."}]}, {"type": "p", "break": true, "spans": [{"t": "Simi's mother tells it differently again. In her version the farmer never finds the river at all. He walks for seven days, and on the eighth morning there is nothing but sand in every direction, and the hum has gone silent. He has no water left. He lies down to die."}]}, {"type": "p", "spans": [{"t": "But the night is cold, and in the morning there is dew on his cloak, a few drops caught in the wool, and he licks them off and finds he can stand. The next morning, the same. He walks home on dew, a mouthful at a time, and it takes him a month, and by the time he arrives his family has already mourned him and given away his shoes."}]}, {"type": "p", "spans": [{"t": "“So what did he learn?” I asked her."}]}, {"type": "p", "spans": [{"t": "She looked at me as though I were a little slow. “That water does not come from one place,” she said. “It comes from everywhere, a little at a time. You only notice it when you are thirsty enough.”"}]}, {"type": "p", "break": true, "spans": [{"t": "I have been working on this piece for a long time now. Longer than anything else I have written here. I started it in the heat at the end of summer, and I am finishing it now that the evenings have turned cool enough to sit outside. Some days I added a page. Some days I added a sentence, and then took it out again."}]}, {"type": "p", "spans": [{"t": "I think I kept returning to it because I recognized myself in that farmer — not the brave one, not the greedy one, but the one who kneels at the edge of something he has taken for granted his whole life and suddenly needs to know where it comes from. The words I write here arrive each morning like water in a ditch. I never asked where from."}]}, {"type": "quote", "spans": [{"t": "Everything that reaches you has travelled a long way to get here."}]}, {"type": "p", "spans": [{"t": "Maybe that is the real ending, the one under all the others. The spring, the dew, the river in the dark — they are all the same water, at different moments in its journey. My grandmother's farmer, Hassan's farmer, Simi's mother's farmer: the same man, at different moments in his."}]}, {"type": "p", "spans": [{"t": "Tonight I went down to the pool after the lanterns were lit. The water was very still. I knelt at the edge, a little embarrassed, and put my ear close to the stone."}]}, {"type": "p", "spans": [{"t": "I am not going to tell you what I heard. But I sat there a long time, and when I stood up my knees were wet, and I did not mind at all."}]}], "days": [44, 37, 25, 12], "upd": [12, 23, 40]}], "simi": [{"title": "Bread Before the Heat", "kind": "long", "status": "published", "body": [{"type": "p", "opening": true, "spans": [{"t": "The bakery on our lane opens before the call to prayer has finished echoing. By six there is a line — women in housecoats, a soldier home on leave, two schoolgirls sharing one coin between them and arguing about how to spend it."}]}, {"type": "p", "spans": [{"t": "I go for the round loaves that come out puffed like a held breath and collapse the moment you tear them. Umm Karim, who runs the oven, has never once given me correct change. She rounds up or down depending, I think, on her opinion of my day."}]}, {"type": "quote", "spans": [{"t": "Bread is a promise you keep every morning, whether anyone thanks you or not."}]}, {"type": "p", "spans": [{"t": "I walked home with the loaf warm against my ribs and thought about all the promises I keep without noticing. Most of them are small. Most of them are bread."}]}], "days": [4, 3], "pub": [3, 7, 15]}, {"title": "", "kind": "short", "status": "draft", "body": [{"type": "p", "spans": [{"t": "Watched a heron stand in the shallows for twenty minutes without moving. I have never been that sure of anything."}]}], "days": [0], "upd": [0, 6, 5]}]};
-  const ago=(n,h=12,m=0)=>{ const d=new Date(); d.setDate(d.getDate()-n); d.setHours(h,m,0,0); return d; };
-  const list=[];
-  for(const w in SEED) SEED[w].forEach((x,i)=>{
-    const upd=x.pub?ago(...x.pub):ago(...x.upd);
-    list.push({id:'seed-'+w+i, writer:w, kind:x.kind, status:x.status, title:x.title, body:x.body, revision:null,
-      created_at:ago(Math.max(...x.days)).toISOString(), updated_at:upd.toISOString(),
-      published_at:x.pub?upd.toISOString():null, tended_days:x.days.map(n=>dayKey(ago(n))).sort(), illuminated:false});
-  });
-  DB.write(list); store.set('waha-seeded-v3','1');
-})();
+// the old demo kept pieces in this browser — clear them so they never come back
+['waha-posts','waha-seeded-v3','waha-draft-long','waha-draft-short','waha-mode'].forEach(k=>store.del(k));
 
 /* ---------- The piece on the page ---------- */
 let cur=null, mode='long', saveT=0, pending=false, savedAt=null, saveFailed=false;
-const blank=kind=>({id:null,writer:B.dataset.author,kind:kind||'long',status:'draft',title:'',body:[],revision:null,
+const blank=kind=>({id:null,writer:me?me.writer:B.dataset.author,kind:kind||'long',status:'draft',title:'',body:[],revision:null,
   created_at:null,updated_at:null,published_at:null,tended_days:[],illuminated:false});
 const view=p=>p.status==='published'&&p.revision?p.revision:{title:p.title,body:p.body};
 
@@ -572,17 +606,18 @@ function applyKind(k){
   $('hint').textContent=COPY[k].hint; $('hint').classList.toggle('gone',!!store.get('waha-hint-'+k)||!!(cur&&cur.id));
 }
 function openPiece(p){
-  cur=p; store.set('waha-open-'+B.dataset.author,p.id||'');
+  cur=p; if(me) store.set('waha-open-'+me.writer,p.id||'');
   const v=view(p); titleEl.textContent=v.title||''; ed.innerHTML=fromBlocks(v.body);
-  savedAt=p.updated_at?new Date(p.updated_at):null; saveFailed=false; pending=false;
+  if(p._snap==null) p._snap=snapOf(p,p.kind==='long'?(v.title||''):'',v.body);
+  savedAt=p.updated_at?new Date(p.updated_at):null; saveFailed=!!p._failed; pending=false;
   applyKind(p.kind); normalize(); refresh();
   lastRange=null; tide.classList.remove('show'); scrollTo({top:0});
   setTimeout(()=>{ const f=ed.firstElementChild; if(f){ const r=document.createRange(); r.selectNodeContents(f); r.collapse(false); lastRange=r; place(); render(); } },60);
 }
 function firstPiece(){
-  const w=B.dataset.author, id=store.get('waha-open-'+w), p=id&&DB.get(id);
-  if(p&&p.writer===w) return p;
-  const l=DB.mine(w); return l.find(x=>x.status==='draft')||l[0]||blank('long');
+  const id=store.get('waha-open-'+me.writer), p=id&&DB.get(id);
+  if(p) return p;
+  const l=DB.mine(); return l.find(x=>x.status!=='published')||blank('long');
 }
 document.querySelectorAll('.mode button').forEach(b=>b.addEventListener('click',()=>{
   if(b.dataset.mode===mode||cur.status==='published') return;
@@ -591,28 +626,68 @@ document.querySelectorAll('.mode button').forEach(b=>b.addEventListener('click',
 addEventListener('resize',()=>{const act=document.querySelector('.mode button.on'); if(act){$('slider').style.left=act.offsetLeft+'px';$('slider').style.width=act.offsetWidth+'px';}});
 
 /* ---------- Safeguard 1: save as you go — a quiet autosave after every pause ---------- */
-function save(){ pending=true; clearTimeout(saveT); saveT=setTimeout(commit,700); refresh(); }
-function commit(){
-  clearTimeout(saveT);
-  if(!cur) return;
-  const title=cur.kind==='long'?titleEl.textContent.trim():'';
-  const body=toBlocks(), v=view(cur);
-  pending=false;
-  if((v.title||'')===title&&JSON.stringify(v.body||[])===JSON.stringify(body)){ refresh(); return; }
-  if(!cur.id){
-    if(!title&&!body.length){ refresh(); return; }
-    cur.id='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); cur.created_at=new Date().toISOString();
-  }
+const snapOf=(p,title,body)=>JSON.stringify([p.kind,title,body]);
+function save(){ pending=true; clearTimeout(saveT); saveT=setTimeout(commit,800); backup(); refresh(); }
+// copy what's on the page into the piece; true if anything changed since it was last sent
+function capture(){
+  if(!cur) return false;
+  const title=cur.kind==='long'?titleEl.textContent.trim():'', body=toBlocks(), snap=snapOf(cur,title,body);
+  if(snap===cur._snap) return false;
+  if(!cur.id&&!title&&!body.length) return false;
   if(cur.status==='published') cur.revision={title,body};       // edits to a live piece wait privately until "Save changes"
   else { cur.title=title; cur.body=body; }
-  const d=dayKey(); if(!cur.tended_days.includes(d)) cur.tended_days.push(d);   // another day spent with this piece
-  cur.updated_at=new Date().toISOString();
-  const ok=DB.put(cur); saveFailed=!ok; if(ok) savedAt=new Date();
-  store.set('waha-open-'+cur.writer,cur.id);
-  refresh();
+  const d=dayKey(); if(!cur.tended_days.includes(d)) cur.tended_days=[...cur.tended_days,d];   // another day spent with this piece
+  cur._snap=snap; cur._dirty=true; return true;
 }
+function commit(){ clearTimeout(saveT); pending=false; capture(); const p=flush(cur); refresh(); return p; }
+function flush(p){
+  if(!p||!p._dirty) return p&&p._promise||Promise.resolve();
+  if(p._saving){ p._again=true; return p._promise; }
+  p._saving=true; p._dirty=false; const sent=p._snap;
+  p._promise=(async()=>{
+    try{
+      await DB.put(p);
+      p._failed=false;
+      if(p===cur){ saveFailed=false; savedAt=new Date(); store.set('waha-open-'+me.writer,p.id); }
+      const bk=readBackup(); if(bk&&bk.key===p._key&&bk.snap===sent) store.del(backupKey());
+    }catch(e){
+      console.error('save failed',e);
+      p._dirty=true; p._failed=true; p._err=e;
+      if(p===cur) saveFailed=true;
+      clearTimeout(p._retry); p._retry=setTimeout(()=>flush(p),8000);   // keep trying quietly
+    }finally{
+      p._saving=false;
+      if(p._again&&!p._failed){ p._again=false; flush(p); }
+      if(p===cur) refresh();
+    }
+  })();
+  return p._promise;
+}
+addEventListener('online',()=>{ if(cur&&cur._dirty) flush(cur); });
 addEventListener('pagehide',commit);
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) commit(); });
+
+/* A copy of the words on this device, kept until the database confirms it has them */
+const backupKey=()=>'waha-backup-'+(me?me.writer:'x');
+function readBackup(){ try{ return JSON.parse(store.get(backupKey())||'null'); }catch(e){ return null; } }
+function backup(){
+  if(!cur||!me) return;
+  if(!cur._key) cur._key=Math.random().toString(36).slice(2);
+  const title=cur.kind==='long'?titleEl.textContent.trim():'', body=toBlocks();
+  if(!cur.id&&!title&&!body.length) return;
+  store.set(backupKey(),JSON.stringify({key:cur._key,id:cur.id,kind:cur.kind,title,body,snap:snapOf(cur,title,body),at:Date.now()}));
+}
+function restoreBackup(){
+  const bk=readBackup(); if(!bk) return false;
+  let p=bk.id?DB.get(bk.id):null;
+  if(bk.id&&!p){ store.del(backupKey()); return false; }               // that piece was deleted
+  if(p){ const v=view(p); if(JSON.stringify([p.kind,v.title||'',v.body])===JSON.stringify([bk.kind,bk.title,bk.body])){ store.del(backupKey()); return false; } }
+  if(!p) p=blank(bk.kind);
+  openPiece(p); p._key=bk.key;
+  titleEl.textContent=bk.title||''; ed.innerHTML=fromBlocks(bk.body); normalize();
+  save(); toast('Your words are safe','We found writing that hadn’t reached the oasis yet and put it back.');
+  return true;
+}
 
 /* ---------- Status line, growth toward Illuminated, and the Publish button ---------- */
 function status(){ refresh(); }
@@ -645,12 +720,16 @@ function refresh(){
   const st=$('status'); st.classList.toggle('bad',saveFailed);
   const days=cur.tended_days.length;
   const bytes=new Blob([JSON.stringify({title,body})]).size;
-  if(saveFailed) st.textContent='Couldn’t save on this device — copy your words somewhere safe before closing.';
+  if(saveFailed){
+    const tooLong=cur._err&&/short_note_limit/.test(cur._err.message||'');
+    st.textContent=tooLong?'A note can only be saved at 280 characters or fewer — trim it a little and it will save.'
+      :'Can’t reach the oasis right now. Your words are kept on this device and will save on their own once the connection is back.';
+  }
   else {
     const parts=[];
     if(!short) parts.push(`${words.toLocaleString()} word${words===1?'':'s'}`);
     if(days) parts.push(`tended on ${days} day${days===1?'':'s'}`);
-    parts.push(pending?'saving…':savedAt?(cur.status==='published'&&!cur.revision?'live in the oasis':`saved ${fmtTime(savedAt)}`):'not saved yet');
+    parts.push(pending||cur._saving||cur._dirty?'saving…':savedAt?(cur.status==='published'&&!cur.revision?'live in the oasis':`saved ${fmtTime(savedAt)}`):'not saved yet');
     st.innerHTML=esc(parts.join(' · '))+(bytes>SIZE_WARN?`<span class="warn">This piece is very large (${Math.round(bytes/1024)} KB). It’s still safe — mention it to Mike before it doubles.</span>`:'');
   }
   // growth toward Illuminated
@@ -667,41 +746,61 @@ function refresh(){
   } else g.className='grow';
 }
 
-/* ---------- Your pieces ---------- */
+/* ---------- Your pieces: search, filter, and grouped by month ---------- */
+let pFilter='all', pQuery='';
+const FILTERS=[['all','All'],['draft','Drafts'],['published','Published'],['illum','Illuminated']];
+const dateOfPiece=p=>new Date(p.status==='published'?p.published_at:(p.updated_at||Date.now()));
+const fold=t=>String(t||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
 function openDrawer(){ commit(); renderList(); $('drawer').classList.add('open'); $('scrim').classList.add('open'); }
-function closeDrawer(){ $('drawer').classList.remove('open'); $('scrim').classList.remove('open'); }
+function closeDrawer(){ $('drawer').classList.remove('open'); $('scrim').classList.remove('open'); $('psearch').blur(); }
 $('scrim').addEventListener('click',closeDrawer); $('dX').addEventListener('click',closeDrawer);
 addEventListener('keydown',e=>{ if(e.key==='Escape') closeDrawer(); });
+$('psearch').addEventListener('input',e=>{ pQuery=e.target.value; renderList(); });
+$('pfilters').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; pFilter=b.dataset.f; renderList(); });
 function renderList(){
-  const w=B.dataset.author, list=DB.mine(w);
+  if(!me) return;
+  const w=me.writer, all=DB.mine().slice().sort((a,b)=>dateOfPiece(b)-dateOfPiece(a));
   $('dTitle').textContent=WRITERS[w].name+'’s pieces'; $('dSeal').innerHTML=`<use href="#seal-${w}"/>`;
-  if(!list.length){ $('plist').innerHTML='<p class="pempty">Nothing here yet. Your first piece is waiting.</p>'; return; }
-  $('plist').innerHTML=list.map(p=>{
+  const is={all:()=>true,draft:p=>p.status!=='published',published:p=>p.status==='published',illum:p=>p.illuminated||(p.status!=='published'&&canBloom(p,p.body))};
+  $('pfilters').innerHTML=FILTERS.map(([k,l])=>{ const n=all.filter(is[k]).length;
+    return (k==='illum'&&!n)?'':`<button data-f="${k}" class="${pFilter===k?'on':''}" role="tab" aria-selected="${pFilter===k}">${l}<i>${n}</i></button>`; }).join('');
+  if(!all.length){ $('plist').innerHTML='<p class="pempty">Nothing here yet. Your first piece is waiting.</p>'; return; }
+  const q=fold(pQuery.trim());
+  const list=all.filter(is[pFilter]).filter(p=>{ if(!q) return true; const v=view(p); return fold(v.title).includes(q)||fold(textOf(v.body)).includes(q); });
+  if(!list.length){ $('plist').innerHTML=`<p class="pempty">${q?'Nothing matches “'+esc(pQuery.trim())+'”.':'Nothing here yet.'}</p>`; return; }
+  let month='', html='';
+  for(const p of list){
+    const d=dateOfPiece(p), m=d.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+    if(m!==month){ month=m; html+=`<div class="pmonth">${m}</div>`; }
     const v=view(p), words=wordsOf(v.body), days=p.tended_days.length;
     const name=p.kind==='short'?(textOf(v.body).slice(0,70)+(textOf(v.body).length>70?'…':'')||'An empty note'):(v.title||'Untitled');
     const ready=p.status!=='published'&&canBloom(p,p.body);
     const tags=(p.illuminated?'<span class="tag gold">Illuminated</span>':ready?'<span class="tag gold">Ready to illuminate</span>':'')+
       (p.status==='published'?(p.revision?'<span class="tag edit">Unsaved changes</span>':'<span class="tag live">Live</span>'):'<span class="tag">Draft</span>');
-    const meta=p.status==='published'?`published ${fmtDate(p.published_at)}`:`${p.kind==='short'?'a note':words.toLocaleString()+' words'} · tended ${days} day${days===1?'':'s'}`;
-    return `<div class="pc${p.illuminated||ready?' illum':''}${cur&&p.id===cur.id?' cur':''}" data-id="${p.id}">
-      <button class="pc-main"><svg><use href="#i-${p.kind}"/></svg><div class="pc-txt"><b>${esc(name)}</b><span>${tags}${meta}</span></div></button>
+    const meta=p.status==='published'?`published · ${p.kind==='short'?'a note':words.toLocaleString()+' words'}`:`${p.kind==='short'?'a note':words.toLocaleString()+' words'} · tended ${days} day${days===1?'':'s'}`;
+    const short=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    html+=`<div class="pc${p.illuminated||ready?' illum':''}${cur&&p===cur?' cur':''}" data-id="${esc(p.id||'')}">
+      <button class="pc-main"><svg><use href="#i-${p.kind}"/></svg><div class="pc-txt"><b>${esc(name)}</b><span><em class="pc-date">${short}</em>${tags}${meta}</span></div></button>
       <button class="pc-del" aria-label="Delete">×</button>
-      <div class="pc-confirm">Delete forever? <button class="yes">Delete</button><button class="no">Keep</button></div></div>`;
-  }).join('');
+      <div class="pc-confirm">${p.status==='published'?'This is live. Remove it from the oasis forever?':'Delete forever?'} <button class="yes">Delete</button><button class="no">Keep</button></div></div>`;
+  }
+  $('plist').innerHTML=html;
 }
-$('plist').addEventListener('click',e=>{
+$('plist').addEventListener('click',async e=>{
   const card=e.target.closest('.pc'); if(!card) return; const id=card.dataset.id;
   if(e.target.closest('.pc-del')){ card.classList.toggle('confirm'); return; }
   if(e.target.closest('.no')){ card.classList.remove('confirm'); return; }
   if(e.target.closest('.yes')){
-    DB.del(id); if(cur&&cur.id===id) openPiece(DB.mine(B.dataset.author)[0]||blank('long')); renderList(); return;
+    try{ await DB.del(id); }catch(err){ toast('Couldn’t delete that','The oasis couldn’t be reached. Try again in a moment.'); return; }
+    if(cur&&cur.id===id){ store.del(backupKey()); openPiece(DB.mine()[0]||blank('long')); }
+    renderList(); return;
   }
   if(e.target.closest('.pc-main')){ const p=DB.get(id); if(p){ setPreview(false); openPiece(p); closeDrawer(); } }
 });
 function newPiece(){ commit(); setPreview(false); openPiece(blank('long')); closeDrawer();
   if(TOUCH) enterEdit(titleEl); else titleEl.focus(); }
 $('newPiece').addEventListener('click',newPiece);
-$('switchW').addEventListener('click',()=>{ commit(); setAuthor(B.dataset.author==='amir'?'simi':'amir'); openPiece(firstPiece()); renderList(); });
+$('signOutBtn').addEventListener('click',async()=>{ await commit(); try{ await sb.auth.signOut(); }catch(e){} location.href='index.html'; });
 
 /* ---------- Selection helpers ---------- */
 let lastRange=null, lastInput=0;
@@ -964,23 +1063,35 @@ $('previewBtn').addEventListener('click',()=>setPreview(true));
 $('backBtn').addEventListener('click',()=>setPreview(false));
 function toast(p,small,em){ $('toastP').textContent=p; $('toastS').textContent=small; $('toastE').textContent=em||'';
   const t=$('toast'); t.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>t.classList.remove('show'),3800); }
-$('publishBtn').addEventListener('click',()=>{
-  if($('publishBtn').disabled) return;
-  commit();
-  const now=new Date().toISOString();
-  if(cur.status==='published'){
-    if(!cur.revision){ refresh(); return; }
-    cur.title=cur.revision.title; cur.body=cur.revision.body; cur.revision=null; cur.updated_at=now;
-    saveFailed=!DB.put(cur); savedAt=new Date();
-    toast('Changes saved','They’re live in the oasis now.');
-  } else {
-    cur.illuminated=canBloom(cur,cur.body);           // decided once, at release (the database decides it too)
-    cur.status='published'; cur.published_at=now; cur.updated_at=now;
-    saveFailed=!DB.put(cur); savedAt=new Date();
-    toast('Released into the oasis','It rises at first light, and the others move deeper into the day.',
-      cur.illuminated?`Illuminated · tended across ${cur.tended_days.length} days`:'');
+let publishing=false;
+$('publishBtn').addEventListener('click',async()=>{
+  if($('publishBtn').disabled||publishing) return;
+  publishing=true; const pb=$('publishBtn'), lbl=pb.querySelector('.t'), was=lbl.textContent; lbl.textContent='One moment…'; pb.disabled=true;
+  const p=cur;
+  try{
+    await commit();
+    if(p._dirty||p._saving) await flush(p);
+    if(p._dirty) throw p._err||new Error('not saved');
+    if(p.status==='published'){
+      if(!p.revision){ refresh(); return; }
+      const keep={title:p.title,body:p.body,revision:p.revision};
+      p.title=p.revision.title; p.body=p.revision.body; p.revision=null;
+      try{ await DB.put(p); }catch(e){ Object.assign(p,keep); throw e; }
+      toast('Changes saved','They’re live in the oasis now.');
+    } else {
+      p.status='published';
+      try{ await DB.put(p); }catch(e){ p.status='draft'; throw e; }   // the database decides Illuminated at this moment
+      toast('Released into the oasis','It rises at first light, and the others move deeper into the day.',
+        p.illuminated?`Illuminated · tended across ${p.tended_days.length} days`:'');
+    }
+    if(p===cur){ savedAt=new Date(); saveFailed=false; p._snap=snapOf(p,p.kind==='long'?(p.title||''):'',p.body); }
+    store.del(backupKey());
+  }catch(e){
+    console.error('publish failed',e);
+    toast('Not published yet','The oasis couldn’t be reached. Your words are safe here — try again in a moment.');
+  }finally{
+    publishing=false; if(lbl.textContent==='One moment…') lbl.textContent=was; refresh();
   }
-  refresh();
 });
 $('clearBtn').addEventListener('click',newPiece);
 
@@ -1050,9 +1161,28 @@ if(TOUCH){
   },{passive:false});
 }
 
-openPiece(firstPiece());
-setState('waking');
-showNudge();
+/* ---------- Opening: only Amir and Simi get past this point ---------- */
+function lock(title,text,action){
+  $('lock').hidden=false; $('lockT').textContent=title; $('lockP').textContent=text||''; $('lockP').hidden=!text;
+  $('lockSpin').hidden=!!action; $('lockAct').innerHTML=action||'';
+}
+async function start(){
+  lock('Opening your pieces…');
+  if(!sb){ lock('The oasis can’t be reached','The connection didn’t load. Check your internet and try again.','<button onclick="location.reload()">Try again</button>'); return; }
+  let session=null;
+  try{ const {data}=await sb.auth.getSession(); session=data&&data.session; }catch(e){}
+  const w=session?writerFor(session.user.email):null;
+  if(!w){ lock('This page belongs to the writers','Go back to the oasis and press and hold the واحة at the top to step inside.','<a href="index.html">Back to the oasis</a>'); return; }
+  me={uid:session.user.id,writer:w}; setAuthor(w);
+  try{ await DB.load(); }
+  catch(e){ console.error(e); lock('Your pieces didn’t load','The oasis couldn’t be reached just now.','<button onclick="location.reload()">Try again</button>'); return; }
+  $('lock').hidden=true;
+  if(!restoreBackup()) openPiece(firstPiece());
+  setState('waking');
+  showNudge();
+}
+if(sb) sb.auth.onAuthStateChange(ev=>{ if(ev==='SIGNED_OUT'&&me) location.href='index.html'; });
+start();
 })();
 </script>
 </body>
