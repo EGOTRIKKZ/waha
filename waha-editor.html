@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+<title>Wāḥa — Write</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Marcellus&family=Marcellus+SC&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#3a2a1c; --ink-soft:#7a6248; --sand:#f3e5c9;
+  --gold:#b0802b; --gold-light:#dcb766; --lapis:#2b6a8a; --lapis-light:#86c0d8;
+  --hand:var(--gold); --hand-light:var(--gold-light);
+  --rail-w:46px;
+}
+body[data-author=simi]{--hand:var(--lapis);--hand-light:var(--lapis-light)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--sand)}
+html{touch-action:manipulation}
+body{font-family:"Cormorant Garamond",Georgia,serif;color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;mix-blend-mode:multiply;z-index:0;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .38  0 0 0 0 .27  0 0 0 0 .13  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>")}
+button{font:inherit;-webkit-tap-highlight-color:transparent}
+
+/* ---------- Dawn band ---------- */
+.dawn{position:relative;height:150px;background:linear-gradient(#86abd0,#f8cf9f 70%,var(--sand));overflow:hidden;z-index:1}
+.dawn svg{position:absolute;left:0;right:0;bottom:0;width:100%;height:90px}
+.dawn .sun{position:absolute;left:14%;top:62px;width:56px;height:56px;border-radius:50%;
+  background:radial-gradient(circle,#fffbe9,#ffd08a 70%,transparent 72%);box-shadow:0 0 50px 16px rgba(255,208,138,.5)}
+
+/* ---------- Top chips ---------- */
+.chips{position:fixed;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;z-index:30;pointer-events:none;
+  transition:opacity .9s ease,transform .9s ease}
+.chips > *{pointer-events:auto}
+body.typing .chips{opacity:.12;transform:translateY(-6px)}
+.glass{background:rgba(243,229,201,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.home{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;text-decoration:none;font-family:Amiri,serif;font-weight:700;font-size:1rem;
+  color:var(--gold);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--hand) 50%,transparent);flex:none}
+.left{display:flex;gap:8px;align-items:center;min-width:0}
+.who{display:flex;align-items:center;gap:.55rem;border:none;cursor:pointer;padding:.38rem .95rem .38rem .55rem;border-radius:999px;color:var(--ink);
+  box-shadow:inset 0 0 0 1.5px var(--hand),inset 0 0 0 4px rgba(243,229,201,.7),inset 0 0 0 5px color-mix(in srgb,var(--hand) 40%,transparent)}
+.who svg{width:22px;height:22px;fill:var(--hand);color:var(--hand)}
+.who .n{font-family:"Marcellus SC",serif;letter-spacing:.2em;font-size:.88rem}
+.who .a{font-family:Amiri,serif;font-size:1.15rem;color:var(--hand);line-height:1}
+.who small{font-style:italic;font-size:.82rem;color:var(--ink-soft)}
+.acts{display:flex;gap:8px;align-items:center}
+.kept{font-style:italic;font-size:.9rem;color:var(--ink-soft);opacity:0;transition:opacity .6s;margin-right:4px;text-shadow:0 0 8px var(--sand)}
+.kept.show{opacity:1}
+.btn{display:inline-flex;align-items:center;gap:.45rem;font-family:"Marcellus SC",serif;letter-spacing:.14em;font-size:.82rem;padding:.6rem 1.05rem;border-radius:999px;cursor:pointer;
+  border:1px solid color-mix(in srgb,var(--hand) 60%,transparent);color:var(--ink);transition:all .3s}
+.btn svg{width:17px;height:17px;flex:none}
+.btn.solid{background:var(--hand);color:#fff8ea;border-color:var(--hand)}
+.btn[disabled]{opacity:.45;cursor:default}
+.pvbar{display:none;align-items:center;gap:.8rem;padding:.35rem .4rem .35rem 1rem;border-radius:999px;border:1px solid color-mix(in srgb,var(--hand) 50%,transparent)}
+.pvbar span{font-style:italic;font-size:1rem;color:var(--ink-soft)}
+body.preview .acts{display:none}
+body.preview .pvbar{display:flex}
+body.preview .chips{opacity:1;transform:none}
+
+/* ---------- The sheet ---------- */
+.sheet{position:relative;z-index:2;max-width:calc(35rem + 2*var(--rail-w) + 64px);margin:-34px auto 0;padding:0 calc(var(--rail-w) + 24px) 40vh}
+
+/* Long piece / Short note */
+.mode{position:relative;display:flex;margin:0 auto 1.8rem;width:max-content;max-width:100%;padding:4px;border-radius:999px;
+  background:rgba(255,248,232,.75);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--hand) 35%,transparent),0 6px 20px rgba(58,42,28,.08)}
+.mode button{position:relative;z-index:1;display:flex;align-items:center;gap:.5rem;border:none;background:none;cursor:pointer;
+  font-family:"Marcellus SC",serif;letter-spacing:.14em;font-size:.84rem;padding:.65rem 1.15rem;border-radius:999px;color:var(--ink-soft);transition:color .45s}
+.mode button svg{width:18px;height:18px}
+.mode button.on{color:#fff8ea}
+.mode .slider{position:absolute;top:4px;bottom:4px;left:4px;border-radius:999px;background:var(--hand);transition:left .45s cubic-bezier(.2,.7,.2,1),width .45s cubic-bezier(.2,.7,.2,1)}
+
+.when{font-family:"Marcellus SC",serif;color:var(--ink-soft);letter-spacing:.3em;font-size:.88rem;text-align:center;margin-bottom:.8rem;
+  display:flex;align-items:center;justify-content:center;gap:.8rem}
+.when::before,.when::after{content:"";width:40px;height:1px;background:currentColor;opacity:.5}
+#title{font-family:"Marcellus",serif;font-size:clamp(2.3rem,7vw,3.8rem);line-height:1.08;text-align:center;outline:none;color:var(--ink);margin-bottom:1.6rem;min-height:1.1em}
+#title:empty::before{content:"Name this piece";color:color-mix(in srgb,var(--ink) 30%,transparent)}
+.hint{text-align:center;font-style:italic;color:var(--ink-soft);font-size:1.12rem;line-height:1.55;max-width:27rem;margin:0 auto 2rem;transition:opacity 1.2s,max-height 1.2s,margin 1.2s;max-height:7em;overflow:hidden}
+.hint.gone{opacity:0;max-height:0;margin:0 auto}
+
+#body{outline:none;font-size:clamp(1.18rem,2.1vw,1.34rem);line-height:1.78;caret-color:var(--hand);min-height:40vh}
+#body p{position:relative;margin:0 0 1.25em;hyphens:auto}
+#body.empty p:first-child::before{content:attr(data-ph);position:absolute;left:0;right:0;font-style:italic;color:color-mix(in srgb,var(--ink) 32%,transparent);pointer-events:none}
+#body p.open::first-letter{font-family:"Marcellus",serif;float:left;font-size:4.4em;line-height:.82;padding:.06em .12em 0 0;color:var(--hand)}
+#body blockquote{margin:2.2em 0;padding:1.3em 0;text-align:center;font-style:italic;font-size:1.32em;line-height:1.45;position:relative;
+  color:color-mix(in srgb,var(--hand) 55%,#3a2a1c);
+  border-top:1px solid color-mix(in srgb,var(--hand) 45%,transparent);border-bottom:1px solid color-mix(in srgb,var(--hand) 45%,transparent)}
+#body blockquote::before,#body blockquote::after{content:"";position:absolute;left:50%;width:7px;height:7px;background:var(--hand);transform:translate(-50%,-50%) rotate(45deg)}
+#body blockquote::before{top:0}#body blockquote::after{top:100%}
+#body i,#body em{font-style:italic;color:color-mix(in srgb,var(--hand) 30%,var(--ink))}
+.orn{display:flex;align-items:center;justify-content:center;gap:1rem;margin:2.2em 0;color:var(--hand);cursor:pointer;user-select:none;-webkit-user-select:none}
+.orn::before,.orn::after{content:"";height:1px;width:clamp(40px,12vw,90px);background:linear-gradient(to right,transparent,currentColor)}
+.orn::after{background:linear-gradient(to left,transparent,currentColor)}
+.orn svg{width:40px;height:10px;fill:currentColor}
+.flash{animation:flash 1.1s ease}
+@keyframes flash{0%{background:color-mix(in srgb,var(--hand-light) 35%,transparent)}100%{background:transparent}}
+
+/* ---------- Short note mode ---------- */
+body.short #title{display:none}
+body.short #body{font-size:clamp(1.5rem,4.6vw,1.95rem);line-height:1.5;text-align:center;font-style:italic;min-height:26vh}
+body.short #body p{margin:0 0 .5em}
+body.short .rail.l,body.short .tool[data-act=quote]{display:none}
+.count{display:none;flex-direction:column;align-items:center;gap:.5rem;margin-top:1.4rem;font-family:"Marcellus SC",serif;letter-spacing:.2em;font-size:.8rem;color:var(--ink-soft);transition:color .4s}
+body.short .count{display:flex}
+.meter{width:140px;height:2px;background:color-mix(in srgb,var(--ink) 12%,transparent);border-radius:2px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--hand);transition:width .3s,background .3s}
+.count.low{color:var(--hand)}
+.count.over{color:#a4483a}.count.over .meter i{background:#a4483a}
+
+/* ---------- Rails: on/off tools for the line you're on ---------- */
+.rail{position:absolute;top:0;width:var(--rail-w);display:flex;flex-direction:column;gap:24px;z-index:5;
+  transition:transform .55s cubic-bezier(.2,.7,.2,1),opacity .8s ease,filter .8s ease;will-change:transform,opacity}
+.rail.l{left:8px}.rail.r{right:8px}
+body.typing .rail{opacity:.07;filter:blur(1.5px)}
+body.typing .rail.l{margin-left:-8px}body.typing .rail.r{margin-right:-8px}
+body.waking .rail{opacity:.4}
+body.ready .rail{opacity:1}
+body.preview .rail,body.preview .tide{display:none}
+.tool{position:relative;width:var(--rail-w);height:var(--rail-w);border-radius:50%;cursor:pointer;display:grid;place-items:center;
+  border:1px solid color-mix(in srgb,var(--hand) 45%,transparent);background:rgba(243,229,201,.92);color:var(--hand);transition:all .35s}
+.tool svg{width:24px;height:24px}
+.tool .lbl{position:absolute;top:calc(100% + 4px);left:50%;transform:translateX(-50%);white-space:nowrap;font-family:"Marcellus SC",serif;
+  letter-spacing:.08em;font-size:.62rem;color:var(--ink-soft);opacity:0;transition:opacity .5s,color .35s;pointer-events:none}
+body.ready .tool .lbl,body.waking .tool .lbl{opacity:1}
+/* ON — this line has it */
+.tool.on{background:var(--hand);color:#fff8ea;border-color:var(--hand)}
+.tool.on::after{content:"";position:absolute;top:-2px;right:-2px;width:12px;height:12px;border-radius:50%;background:#fff8ea;
+  box-shadow:inset 0 0 0 3px var(--hand)}
+.tool.on .lbl{color:var(--hand)}
+/* SUGGESTED — the page thinks this might fit */
+.tool.suggest:not(.on){border:1.5px dashed var(--hand);animation:breathe 2.6s ease-in-out infinite}
+@keyframes breathe{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--hand) 45%,transparent)}50%{box-shadow:0 0 0 9px transparent}}
+.tool[disabled]{opacity:.28;cursor:default;animation:none}
+
+/* ---------- Tide: one suggestion, near the thumbs ---------- */
+.tide{position:fixed;left:50%;bottom:16px;z-index:40;transform:translate(-50%,24px);opacity:0;pointer-events:none;
+  display:flex;align-items:center;gap:.7rem;max-width:calc(100vw - 24px);
+  padding:.55rem .55rem .55rem 1.1rem;border-radius:999px;background:rgba(250,240,220,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 10px 30px rgba(58,42,28,.18),inset 0 0 0 1px color-mix(in srgb,var(--hand) 35%,transparent);
+  transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.tide.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.tide .why{font-style:italic;font-size:1.05rem;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tide .go{display:flex;align-items:center;gap:.45rem;border:none;cursor:pointer;font-family:"Marcellus SC",serif;letter-spacing:.14em;font-size:.82rem;
+  padding:.6rem 1rem;border-radius:999px;background:var(--hand);color:#fff8ea;white-space:nowrap}
+.tide .go svg{width:18px;height:18px}
+.tide .no{border:none;background:none;cursor:pointer;color:var(--ink-soft);font-size:1.3rem;line-height:1;padding:.2rem .45rem}
+
+/* ---------- Preview: long piece ---------- */
+.oasis,.oasis-short{display:none;position:relative;z-index:1;text-align:center;overflow:hidden}
+body.preview:not(.short) .oasis{display:block}
+body.preview.short .oasis-short{display:block}
+body.preview .dawn,body.preview .hint,body.preview #title,body.preview .sheet .when,body.preview .mode,body.preview .foot,body.preview .count{display:none!important}
+body.preview .sheet{margin-top:0;padding-top:clamp(1.5rem,5vw,3rem)}
+body.preview.short .sheet{display:none}
+.oasis{background:linear-gradient(#86abd0,#f8cf9f);padding:110px 16px 0}
+.cartouche{display:inline-flex;align-items:center;gap:.6rem;padding:.42rem 1.25rem .42rem .85rem;border-radius:999px;position:relative;color:#3a2232;
+  border:1.5px solid var(--hand);background:color-mix(in srgb,var(--hand) 14%,transparent);margin-bottom:1rem;
+  box-shadow:inset 0 0 0 4px transparent,inset 0 0 0 5px color-mix(in srgb,var(--hand) 40%,transparent)}
+.cartouche::after{content:"";position:absolute;right:-10px;top:16%;bottom:16%;width:2.5px;border-radius:2px;background:var(--hand)}
+.cartouche svg{width:24px;height:24px;fill:var(--hand);color:var(--hand)}
+.cartouche .n{font-family:"Marcellus SC",serif;letter-spacing:.24em}
+.cartouche .a{font-family:Amiri,serif;font-size:1.3rem;color:var(--hand);line-height:1}
+.oasis .ow{font-family:"Marcellus SC",serif;color:#7c4a4f;letter-spacing:.32em;font-size:1rem;margin-bottom:1rem}
+.oasis h2,.oasis .refl{font-family:"Marcellus",serif;font-weight:400;font-size:clamp(2.5rem,7vw,4.6rem);line-height:1.04;max-width:13ch;margin:0 auto;color:#3a2232}
+.oasis .scene{position:relative;height:120px;margin-top:-40px}
+.oasis .scene svg{width:100%;height:100%;display:block}
+.oasis .pool{height:120px;overflow:hidden;background:linear-gradient(#8cc3c6,#3e8791);margin:0 -16px}
+.oasis .refl{transform:scaleY(-1);opacity:.4;filter:url(#ripple);-webkit-mask-image:linear-gradient(to top,#000,transparent 80%);mask-image:linear-gradient(to top,#000,transparent 80%)}
+.oasis .shore{display:block;width:calc(100% + 32px);height:70px;margin:-60px -16px 0}
+
+/* ---------- Preview: short note, as an ostracon ---------- */
+.oasis-short{min-height:78vh;background:linear-gradient(#86abd0,#f8cf9f 75%,var(--sand));padding:120px 16px 160px}
+.oasis-short .dunes{position:absolute;left:0;right:0;bottom:0;width:100%;height:160px}
+.shard-wrap{position:relative;z-index:1;max-width:30rem;margin:0 auto;filter:drop-shadow(0 14px 22px rgba(58,42,28,.25));animation:float 6s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-8px) rotate(-.4deg)}}
+.shard{position:relative;padding:2.6rem 2.4rem 2.2rem;color:#3b2416;
+  background:radial-gradient(circle at 30% 20%,#ecc39b,#d39a6c 60%,#c08356);
+  clip-path:polygon(3% 9%,22% 0,58% 4%,86% 0,100% 15%,97% 52%,100% 86%,78% 100%,40% 95%,12% 100%,0 80%,4% 44%)}
+.shard::before{content:"";position:absolute;inset:0;opacity:.35;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .35  0 0 0 0 .18  0 0 0 0 .08  0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>")}
+.shard .by{position:relative;display:flex;align-items:center;justify-content:center;gap:.5rem;font-family:"Marcellus SC",serif;letter-spacing:.24em;font-size:.88rem;margin-bottom:1.1rem;color:#5a3520}
+.shard .by svg{width:22px;height:22px;fill:var(--hand);color:var(--hand)}
+.shard .by .a{font-family:Amiri,serif;font-size:1.2rem;letter-spacing:0;color:var(--hand)}
+.shard .txt{position:relative;font-style:italic;font-size:clamp(1.4rem,4.2vw,1.8rem);line-height:1.45}
+.shard .txt i,.shard .txt em{color:color-mix(in srgb,var(--hand) 40%,#3b2416)}
+.shard .ow{position:relative;margin-top:1.2rem;font-family:"Marcellus SC",serif;letter-spacing:.28em;font-size:.78rem;color:#6e4429}
+
+/* ---------- Phones: reading vs writing ---------- */
+body.touch:not(.editing) #body,body.touch:not(.editing) #title{caret-color:transparent;cursor:default}
+.linemark{position:absolute;top:0;left:0;z-index:0;border-radius:10px;pointer-events:none;opacity:0;
+  background:color-mix(in srgb,var(--hand) 9%,transparent);box-shadow:inset 3px 0 0 color-mix(in srgb,var(--hand) 55%,transparent);
+  transition:transform .45s cubic-bezier(.2,.7,.2,1),height .45s,opacity .5s}
+.linemark.show{opacity:1}
+#body,#title{position:relative;z-index:1}
+.nudge{position:fixed;left:50%;bottom:22px;z-index:39;transform:translate(-50%,16px);opacity:0;pointer-events:none;
+  display:flex;align-items:center;gap:.55rem;padding:.6rem 1.15rem;border-radius:999px;white-space:nowrap;
+  background:rgba(250,240,220,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 8px 24px rgba(58,42,28,.15),inset 0 0 0 1px color-mix(in srgb,var(--hand) 30%,transparent);
+  font-style:italic;font-size:1.05rem;color:var(--ink-soft);transition:opacity .7s,transform .7s cubic-bezier(.2,.7,.2,1)}
+.nudge.show{opacity:1;transform:translate(-50%,0)}
+.nudge svg{width:20px;height:20px;color:var(--hand)}
+body.preview .nudge,body.preview .linemark{display:none}
+
+/* ---------- Your pieces (drawer) ---------- */
+.who .chev{width:14px;height:14px;fill:none;stroke:var(--ink-soft);stroke-width:2;margin-left:.1rem}
+.scrim{position:fixed;inset:0;z-index:70;background:rgba(30,24,16,.35);opacity:0;pointer-events:none;transition:opacity .4s}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;bottom:0;left:0;z-index:71;width:min(370px,90vw);background:var(--sand);box-shadow:20px 0 60px rgba(30,24,16,.25);
+  transform:translateX(-104%);transition:transform .5s cubic-bezier(.2,.7,.2,1);display:flex;flex-direction:column;padding:18px 14px calc(14px + env(safe-area-inset-bottom))}
+.drawer.open{transform:none}
+.dh{display:flex;gap:.7rem;align-items:center;padding:4px 4px 14px}
+.dh svg{width:34px;height:34px;fill:var(--hand);color:var(--hand);flex:none}
+.dh h3{font-family:"Marcellus",serif;font-weight:400;font-size:1.35rem;line-height:1.1}
+.dh p{font-style:italic;color:var(--ink-soft);font-size:.98rem}
+.dh .x{margin-left:auto;align-self:flex-start;border:none;background:none;font-size:1.6rem;color:var(--ink-soft);cursor:pointer;padding:0 .3rem}
+.newp{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.85rem;border-radius:14px;border:1.5px dashed color-mix(in srgb,var(--hand) 55%,transparent);
+  background:transparent;font-family:"Marcellus SC",serif;letter-spacing:.16em;font-size:.84rem;color:var(--ink);cursor:pointer;margin-bottom:12px}
+.newp svg{width:18px;height:18px;color:var(--hand)}
+.plist{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:3px 3px 12px;-webkit-overflow-scrolling:touch}
+.pempty{text-align:center;font-style:italic;color:var(--ink-soft);padding:2rem 1rem}
+.pc{position:relative;border-radius:14px;background:rgba(255,250,238,.72);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--hand) 25%,transparent);flex:none}
+.pc.cur{box-shadow:inset 0 0 0 1.5px var(--hand),0 4px 14px rgba(58,42,28,.08)}
+.pc-main{display:flex;gap:.7rem;align-items:flex-start;width:100%;text-align:left;border:none;background:none;padding:.85rem 2.6rem .85rem .85rem;cursor:pointer;color:var(--ink);font:inherit}
+.pc-main svg{width:22px;height:22px;color:var(--hand);flex:none;margin-top:.15rem}
+.pc-txt{min-width:0}
+.pc-txt b{display:block;font-family:"Marcellus",serif;font-weight:400;font-size:1.08rem;line-height:1.25;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.pc-txt>span{display:block;font-style:italic;color:var(--ink-soft);font-size:.92rem;margin-top:.25rem;line-height:1.35}
+.tag{display:inline-block;font-family:"Marcellus SC",serif;font-style:normal;letter-spacing:.12em;font-size:.66rem;padding:.14rem .5rem;border-radius:999px;margin:0 .3rem .15rem 0;
+  background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--ink-soft);vertical-align:1px}
+.tag.live{background:#e3ecdc;color:#4b6a3c}
+.tag.edit{background:#f4e2c4;color:#8a5a1c}
+.tag.gold{background:linear-gradient(90deg,#e8cf8a,#d9b25c);color:#4a3410}
+.pc.illum{background:linear-gradient(#fbf3df,#f5e6c2);box-shadow:inset 0 0 0 1.5px #c9a14a,0 4px 14px rgba(138,100,32,.12)}
+.pc.illum::after{content:"";position:absolute;inset:5px;border:1px dashed #c9a14a;border-radius:10px;pointer-events:none}
+.pc-del{position:absolute;top:.45rem;right:.35rem;z-index:1;border:none;background:none;font-size:1.25rem;color:var(--ink-soft);cursor:pointer;padding:.3rem .55rem;line-height:1}
+.pc-confirm{display:none;align-items:center;gap:.7rem;padding:0 .9rem .85rem 2.9rem;font-style:italic;color:#a4483a}
+.pc.confirm .pc-confirm{display:flex}
+.pc-confirm button{border:none;border-radius:999px;padding:.4rem .9rem;font-family:"Marcellus SC",serif;letter-spacing:.12em;font-size:.74rem;cursor:pointer}
+.pc-confirm .yes{background:#a4483a;color:#fff}
+.pc-confirm .no{background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--ink)}
+.drawer .soft{align-self:center;margin-top:.4rem;border:none;background:none;font:inherit;font-style:italic;color:var(--ink-soft);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- Status & growth (the two safeguards live here) ---------- */
+.status{text-align:center;font-style:italic;color:var(--ink-soft);font-size:1rem;margin-top:1.8rem;line-height:1.5}
+.status.bad{color:#a4483a;font-style:normal;font-weight:500}
+.status .warn{display:block;color:#8a5a1c}
+.grow{display:none;max-width:25rem;margin:1rem auto 0;text-align:center;font-style:italic;color:#8a6420;font-size:1.05rem;line-height:1.45}
+.grow.show{display:block}
+.grow b{font-family:"Marcellus SC",serif;font-style:normal;font-weight:400;letter-spacing:.2em;font-size:.85em}
+.grow .thread{height:2px;background:rgba(201,161,74,.22);margin:.6rem auto 0;width:170px;border-radius:2px;overflow:hidden}
+.grow .thread i{display:block;height:100%;background:linear-gradient(90deg,#c9a14a,#ecd28a);transition:width .6s}
+.mode.locked button{cursor:not-allowed}
+.mode.locked button:not(.on){opacity:.35}
+.btn.done{background:color-mix(in srgb,var(--hand) 55%,var(--sand))}
+
+/* ---------- Illuminated: the piece blooms where it sits ---------- */
+.sheet.illum #body{border:38px solid transparent;border-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><rect x='4' y='4' width='112' height='112' fill='none' stroke='%23c9a14a' stroke-width='1.4' stroke-dasharray='3.5 2.5'/><rect x='14' y='14' width='92' height='92' fill='none' stroke='%232b3466' stroke-width='10'/><rect x='8' y='8' width='104' height='104' fill='none' stroke='%23c9a14a' stroke-width='.9'/><rect x='20' y='20' width='80' height='80' fill='none' stroke='%23c9a14a' stroke-width='.9'/><rect x='27' y='27' width='66' height='66' fill='none' stroke='%23c9a14a' stroke-width='1' stroke-dasharray='3 2.5'/><path d='M45 10.4L48.6 14L45 17.6L41.4 14Z' fill='%23e2bd62'/><path d='M45 102.4L48.6 106L45 109.6L41.4 106Z' fill='%23e2bd62'/><path d='M14 41.4L17.6 45L14 48.6L10.4 45Z' fill='%23e2bd62'/><path d='M106 41.4L109.6 45L106 48.6L102.4 45Z' fill='%23e2bd62'/><path d='M65 10.4L68.6 14L65 17.6L61.4 14Z' fill='%23e2bd62'/><path d='M65 102.4L68.6 106L65 109.6L61.4 106Z' fill='%23e2bd62'/><path d='M14 61.4L17.6 65L14 68.6L10.4 65Z' fill='%23e2bd62'/><path d='M106 61.4L109.6 65L106 68.6L102.4 65Z' fill='%23e2bd62'/><circle cx='55' cy='14' r='1.1' fill='%23e2bd62'/><circle cx='55' cy='106' r='1.1' fill='%23e2bd62'/><circle cx='14' cy='55' r='1.1' fill='%23e2bd62'/><circle cx='106' cy='55' r='1.1' fill='%23e2bd62'/><circle cx='75' cy='14' r='1.1' fill='%23e2bd62'/><circle cx='75' cy='106' r='1.1' fill='%23e2bd62'/><circle cx='14' cy='75' r='1.1' fill='%23e2bd62'/><circle cx='106' cy='75' r='1.1' fill='%23e2bd62'/><circle cx='14' cy='14' r='9.5' fill='%232b3466' stroke='%23c9a14a' stroke-width='1.2'/><rect x='10' y='10' width='8' height='8' fill='%23e2bd62'/><rect x='10' y='10' width='8' height='8' fill='%23e2bd62' transform='rotate(45 14 14)'/><circle cx='14' cy='14' r='1.8' fill='%232b3466'/><circle cx='106' cy='14' r='9.5' fill='%232b3466' stroke='%23c9a14a' stroke-width='1.2'/><rect x='102' y='10' width='8' height='8' fill='%23e2bd62'/><rect x='102' y='10' width='8' height='8' fill='%23e2bd62' transform='rotate(45 106 14)'/><circle cx='106' cy='14' r='1.8' fill='%232b3466'/><circle cx='14' cy='106' r='9.5' fill='%232b3466' stroke='%23c9a14a' stroke-width='1.2'/><rect x='10' y='102' width='8' height='8' fill='%23e2bd62'/><rect x='10' y='102' width='8' height='8' fill='%23e2bd62' transform='rotate(45 14 106)'/><circle cx='14' cy='106' r='1.8' fill='%232b3466'/><circle cx='106' cy='106' r='9.5' fill='%232b3466' stroke='%23c9a14a' stroke-width='1.2'/><rect x='102' y='102' width='8' height='8' fill='%23e2bd62'/><rect x='102' y='102' width='8' height='8' fill='%23e2bd62' transform='rotate(45 106 106)'/><circle cx='106' cy='106' r='1.8' fill='%232b3466'/></svg>") 40 round;padding:1.5rem 1.2rem;margin:0 -1.2rem;transition:padding .6s}
+.sheet.illum #body p.open::first-letter,.illum-art p.open::first-letter{color:#e2bd62;background:#2b3466;border:3px double #c9a14a;border-radius:4px;
+  padding:.1em .16em .04em;margin:.08em .16em 0 0;font-size:3.9em;line-height:.92}
+.ill-tag{display:none;align-items:center;justify-content:center;gap:.7rem;font-family:"Marcellus SC",serif;letter-spacing:.42em;font-size:.82rem;color:#8a6420;margin:0 0 .9rem}
+.ill-tag::before,.ill-tag::after{content:"";width:7px;height:7px;background:#c9a14a;transform:rotate(45deg)}
+body.illum-pv .ill-tag{display:flex}
+.skyg{width:30px;height:18px;vertical-align:-3px;margin-right:.45rem;color:inherit;flex:none}
+.toast em{display:block;font-family:"Marcellus SC",serif;font-style:normal;letter-spacing:.2em;font-size:.8rem;color:#8a6420;margin-top:.7rem}
+.toast em:empty{display:none}
+@media (max-width:640px){
+  .sheet.illum #body{border-width:28px;padding:.9rem .5rem;margin:0 -1rem}
+}
+
+/* ---------- Toast ---------- */
+.toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.96);z-index:60;opacity:0;pointer-events:none;text-align:center;width:min(22rem,calc(100vw - 32px));
+  padding:1.6rem 2rem;border-radius:18px;background:rgba(250,240,220,.97);box-shadow:0 20px 60px rgba(58,42,28,.25);transition:all .6s}
+.toast.show{opacity:1;transform:translate(-50%,-50%)}
+.toast svg{width:42px;height:42px;fill:var(--hand);color:var(--hand)}
+.toast p{font-family:"Marcellus",serif;font-size:1.4rem;margin:.4rem 0 .2rem}
+.toast small{font-style:italic;color:var(--ink-soft);font-size:1.05rem}
+.foot{text-align:center;margin-top:3rem}
+.foot button{background:none;border:none;font-style:italic;font-size:1rem;color:var(--ink-soft);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+
+@media (max-width:640px){
+  :root{--rail-w:40px}
+  .sheet{padding-left:calc(var(--rail-w) + 14px);padding-right:calc(var(--rail-w) + 14px)}
+  .rail.l{left:4px}.rail.r{right:4px}
+  .tool svg{width:21px;height:21px}
+  .who small,.kept{display:none}
+  .btn{padding:.55rem .8rem}
+  .btn .t-long{display:none}
+  .pvbar span{display:none}
+  .mode button{padding:.6rem .9rem;font-size:.78rem}
+  .who .a{display:none}
+}
+@media (max-width:430px){
+  #previewBtn .t{display:none}
+  #previewBtn{padding:.55rem .65rem}
+  .tide .why{max-width:42vw}
+  .when{letter-spacing:.2em;font-size:.8rem}
+  .when::before,.when::after{width:18px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.oasis .refl{filter:none}}
+</style>
+</head>
+<body data-author="amir">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="ripple" x="-10%" y="-30%" width="120%" height="160%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.011 0.085" numOctaves="2" seed="4" result="n">
+        <animate attributeName="baseFrequency" dur="10s" values="0.011 0.085;0.015 0.11;0.011 0.085" repeatCount="indefinite"/>
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="11" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <symbol id="palm" viewBox="0 0 140 220">
+      <path d="M68 220 C70 170 63 120 72 70 L77 70 C71 120 78 170 77 220 Z"/><path d="M74 66 C90 46 116 40 138 54 C116 50 96 54 76 70 Z"/>
+      <path d="M74 66 C58 46 32 40 4 52 C30 50 52 56 72 70 Z"/><path d="M74 64 C84 40 104 24 126 22 C104 32 90 46 78 68 Z"/>
+      <path d="M74 64 C64 40 44 24 20 22 C44 32 58 46 70 68 Z"/><path d="M74 66 C96 64 118 76 132 100 C114 82 96 74 76 70 Z"/>
+      <path d="M74 66 C52 64 28 76 12 102 C32 82 52 74 72 70 Z"/><path d="M74 62 C76 40 72 22 64 4 C80 22 82 42 78 64 Z"/><ellipse cx="74" cy="70" rx="7" ry="5"/>
+    </symbol>
+    <symbol id="seal-amir" viewBox="0 0 140 220"><use href="#palm"/></symbol>
+    <symbol id="seal-simi" viewBox="0 0 68 48">
+      <path d="M34 2 C41 14 41 30 34 42 C27 30 27 14 34 2 Z"/><path opacity=".85" d="M34 42 C26 32 18 22 6 18 C10 30 20 40 34 42 Z"/>
+      <path opacity=".85" d="M34 42 C42 32 50 22 62 18 C58 30 48 40 34 42 Z"/><path opacity=".6" d="M34 42 C22 38 10 36 0 38 C10 44 22 46 34 42 Z"/>
+      <path opacity=".6" d="M34 42 C46 38 58 36 68 38 C58 44 46 46 34 42 Z"/>
+    </symbol>
+    <symbol id="orn" viewBox="0 0 40 10"><path d="M5 1 L9 5 L5 9 L1 5Z"/><path d="M20 0 L25 5 L20 10 L15 5Z"/><path d="M35 1 L39 5 L35 9 L31 5Z"/></symbol>
+    <!-- tool icons -->
+    <symbol id="i-open" viewBox="0 0 24 24"><text x="2" y="17.5" font-family="Marcellus,serif" font-size="17" fill="currentColor">A</text>
+      <path d="M15 8h7M15 12h7M15 16h7M3 21h19" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-break" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9.5l2.5 2.5L4 14.5 1.5 12zM12 8.5l3.5 3.5-3.5 3.5L8.5 12zM20 9.5l2.5 2.5-2.5 2.5-2.5-2.5z"/></symbol>
+    <symbol id="i-quote" viewBox="0 0 24 24"><path d="M2 5h20M2 19h20M7 12h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      <path fill="currentColor" d="M12 3l2 2-2 2-2-2zM12 17l2 2-2 2-2-2z"/></symbol>
+    <symbol id="i-em" viewBox="0 0 24 24"><text x="12" y="18" text-anchor="middle" font-family="Cormorant Garamond,serif" font-style="italic" font-weight="600" font-size="17" fill="currentColor">Aa</text></symbol>
+    <symbol id="i-long" viewBox="0 0 24 24"><path d="M5 3h11l3 3v15H5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M8 9h8M8 12.5h8M8 16h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-short" viewBox="0 0 24 24"><path d="M4 7l6-3 9 2 2 7-3 7-10 0-4-5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M8 11h8M8 14.5h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-tap" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3" fill="currentColor"/><circle cx="12" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="1.3" opacity=".6"/><path d="M12 16.5v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-gem" viewBox="0 0 24 24"><path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="currentColor"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" fill="currentColor"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<div class="chips">
+  <div class="left">
+    <a class="home glass" href="waha-index.html" aria-label="Back to the oasis" title="Back to the oasis">واحة</a>
+    <button class="who glass" id="who" title="Your pieces">
+      <svg id="whoSeal"><use href="#seal-amir"/></svg><small>Writing as</small><span class="n" id="whoName">Amir</span><span class="a" id="whoAr">أمير</span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+  </div>
+  <div class="acts">
+    <span class="kept" id="kept">Draft saved</span>
+    <button class="btn glass" id="previewBtn"><svg><use href="#i-eye"/></svg><span class="t">Preview</span></button>
+    <button class="btn solid" id="publishBtn"><svg><use href="#i-up"/></svg><span class="t">Publish</span></button>
+  </div>
+  <div class="pvbar glass">
+    <span>This is how readers will see it</span>
+    <button class="btn solid" id="backBtn"><svg><use href="#i-back"/></svg>Back to writing</button>
+  </div>
+</div>
+
+<div class="dawn" aria-hidden="true">
+  <div class="sun"></div>
+  <svg viewBox="0 0 1440 90" preserveAspectRatio="none">
+    <path fill="#d8aaa0" d="M0 50 C240 20 480 26 720 44 C960 62 1200 24 1440 38 V90 H0Z"/>
+    <path fill="#b78985" d="M0 70 C260 54 520 60 780 68 C1040 76 1260 56 1440 62 V90 H0Z"/>
+    <path fill="var(--sand)" d="M0 82 C360 74 720 80 1080 76 C1260 74 1360 78 1440 78 V90 H0Z"/>
+  </svg>
+</div>
+
+<!-- Preview: long piece -->
+<div class="oasis" aria-hidden="true">
+  <p class="ill-tag">Illuminated</p>
+  <div class="cartouche"><svg><use class="sealUse" href="#seal-amir"/></svg><span class="n wName">Amir</span><span class="a wAr">أمير</span></div>
+  <p class="ow" id="pvWhen">First Light</p>
+  <h2 id="pvTitle"></h2>
+  <div class="scene"><svg viewBox="0 0 1440 120" preserveAspectRatio="xMidYMax slice" id="pvScene"></svg></div>
+  <div class="pool"><div class="refl" id="pvRefl"></div></div>
+  <svg class="shore" viewBox="0 0 1440 70" preserveAspectRatio="none"><path fill="var(--sand)" d="M0 70 V34 C260 54 480 12 720 28 C960 44 1200 14 1440 36 V70Z"/></svg>
+</div>
+
+<!-- Preview: short note -->
+<div class="oasis-short" aria-hidden="true">
+  <div class="shard-wrap"><div class="shard">
+    <div class="by"><svg><use class="sealUse" href="#seal-amir"/></svg><span class="wName">Amir</span><span class="a wAr">أمير</span></div>
+    <div class="txt" id="pvShort"></div>
+    <div class="ow" id="pvShortWhen">A note at first light</div>
+  </div></div>
+  <svg class="dunes" viewBox="0 0 1440 160" preserveAspectRatio="none">
+    <path fill="#d8aaa0" d="M0 80 C240 40 480 50 720 70 C960 90 1200 50 1440 64 V160 H0Z"/>
+    <path fill="#b78985" d="M0 116 C260 96 520 104 780 112 C1040 120 1260 100 1440 106 V160 H0Z"/>
+    <path fill="var(--sand)" d="M0 146 C360 136 720 142 1080 138 C1260 136 1360 140 1440 140 V160 H0Z"/>
+  </svg>
+</div>
+
+<main class="sheet" id="sheet">
+  <div class="mode" id="mode" role="tablist" aria-label="Kind of post">
+    <span class="slider" id="slider"></span>
+    <button data-mode="long" role="tab"><svg><use href="#i-long"/></svg>Long piece</button>
+    <button data-mode="short" role="tab"><svg><use href="#i-short"/></svg>Short note</button>
+  </div>
+  <p class="when" id="when"></p>
+  <h1 id="title" contenteditable="true" spellcheck="true"></h1>
+  <p class="hint" id="hint"></p>
+
+  <div class="rail l" id="railL">
+    <button class="tool" data-act="open" aria-pressed="false"><svg><use href="#i-open"/></svg><span class="lbl">Opening</span></button>
+    <button class="tool" data-act="break" aria-pressed="false"><svg><use href="#i-break"/></svg><span class="lbl">Break</span></button>
+  </div>
+  <div class="rail r" id="railR">
+    <button class="tool" data-act="quote" aria-pressed="false"><svg><use href="#i-quote"/></svg><span class="lbl">Quote</span></button>
+    <button class="tool" data-act="em" aria-pressed="false"><svg><use href="#i-em"/></svg><span class="lbl">Italic</span></button>
+  </div>
+
+  <div class="linemark" id="linemark"></div>
+  <div id="body" contenteditable="true" spellcheck="true"></div>
+  <div class="count" id="count"><div class="meter"><i id="meterFill"></i></div><span id="countTxt">280 left</span></div>
+  <p class="status" id="status"></p>
+  <div class="grow" id="grow"></div>
+  <div class="foot"><button id="clearBtn">Start a new piece</button></div>
+</main>
+
+<div class="tide" id="tide" role="status">
+  <span class="why" id="tideWhy"></span>
+  <button class="go" id="tideGo"><svg id="tideIc"><use href="#i-quote"/></svg><span id="tideLbl">Quote</span></button>
+  <button class="no" id="tideNo" aria-label="Not now">×</button>
+</div>
+
+<div class="nudge" id="nudge"><svg><use href="#i-tap"/></svg>Double-tap to write</div>
+
+<div class="toast" id="toast"><svg><use class="sealUse" href="#seal-amir"/></svg><p id="toastP">Released into the oasis</p><small id="toastS">It rises at first light, and the others move deeper into the day.</small><em id="toastE"></em></div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Your pieces">
+  <div class="dh">
+    <svg id="dSeal"><use href="#seal-amir"/></svg>
+    <div><h3 id="dTitle">Amir's pieces</h3><p>Drafts keep themselves. Tap one to open it.</p></div>
+    <button class="x" id="dX" aria-label="Close">×</button>
+  </div>
+  <button class="newp" id="newPiece"><svg><use href="#i-plus"/></svg>Start a new piece</button>
+  <div class="plist" id="plist"></div>
+  <button class="soft" id="switchW">Switch writer (demo only)</button>
+</aside>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const ed=$('body'), titleEl=$('title'), sheet=$('sheet'), railL=$('railL'), railR=$('railR'), tide=$('tide'), B=document.body;
+const store={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
+try{document.execCommand('defaultParagraphSeparator',false,'p');document.execCommand('styleWithCSS',false,false);}catch(e){}
+const LIMIT=280;
+const TOUCH=matchMedia('(pointer:coarse)').matches||('ontouchstart' in window);
+if(TOUCH) B.classList.add('touch');
+const editables=[titleEl,ed];
+const editing=()=>!TOUCH||B.classList.contains('editing');
+function setEditable(on){ editables.forEach(e=>e.contentEditable=on?'true':'false'); B.classList.toggle('editing',on&&TOUCH); }
+
+/* ---------- Writers ---------- */
+const WRITERS={amir:{name:'Amir',ar:'أمير'},simi:{name:'Simi',ar:'سيمي'}};
+function setAuthor(a){
+  B.dataset.author=a; const w=WRITERS[a];
+  $('whoName').textContent=w.name; $('whoAr').textContent=w.ar; $('whoSeal').innerHTML=`<use href="#seal-${a}"/>`;
+  document.querySelectorAll('.sealUse').forEach(u=>u.setAttribute('href','#seal-'+a));
+  document.querySelectorAll('.wName').forEach(e=>e.textContent=w.name);
+  document.querySelectorAll('.wAr').forEach(e=>e.textContent=w.ar);
+  store.set('waha-author',a);
+}
+$('who').addEventListener('click',()=>openDrawer());
+const today=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric'});
+const COPY={
+  long:{when:'Draft', ph:'Begin wherever the water is…',
+    hint:TOUCH?'Double-tap any line to write. Scroll, and the keyboard tucks itself away. Tap a line to choose it — every tool is a simple on/off for that line.'
+      :'Just write. When you pause, the page offers what might fit. Every tool is a simple on/off for the line you’re on — tap it again to undo.'},
+  short:{when:'A note · draft', ph:'A thought, passing through…',
+    hint:(TOUCH?'Double-tap to write. ':'')+'A few lines, a passing thought — up to 280 characters.'}
+};
+
+/* ---------- Illuminated: what it takes for a piece to bloom (tune freely) ---------- */
+const ILLUM_DAYS=5;       // worked on across at least this many different days…
+const ILLUM_WORDS=1000;   // …and grown to at least this many words
+/* ---------- Safeguard: Supabase accepts about 1 MB per save; speak up long before that ---------- */
+const SIZE_WARN=700*1024;
+
+/* ---------- Pieces are stored as simple lines ("blocks") — the same shape the database keeps ---------- */
+const pad=n=>String(n).padStart(2,'0');
+const dayKey=(d=new Date())=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const esc=t=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmtTime=d=>d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}).toLowerCase().replace(' ',' ');
+const fmtDate=iso=>new Date(iso).toLocaleDateString('en-US',{month:'long',day:'numeric'});
+function spansOf(el){
+  const out=[];
+  (function walk(n,it){ for(const c of n.childNodes){
+    if(c.nodeType===3){ if(c.data) out.push({t:c.data,i:it}); }
+    else if(c.nodeType===1&&c.tagName!=='BR') walk(c,it||c.tagName==='I'||c.tagName==='EM'); } })(el,false);
+  const m=[]; for(const x of out){ const l=m[m.length-1]; if(l&&!!l.i===!!x.i) l.t+=x.t; else m.push(x.i?{t:x.t,i:true}:{t:x.t}); }
+  return m;
+}
+function toBlocks(){
+  const out=[]; let brk=false;
+  for(const c of ed.children){
+    if(c.classList.contains('orn')){ brk=true; continue; }
+    const sp=spansOf(c); if(!sp.map(x=>x.t).join('').trim()) continue;
+    const blk={type:c.tagName==='BLOCKQUOTE'?'quote':'p'};
+    if(c.classList.contains('open')) blk.opening=true;
+    if(brk) blk.break=true;
+    blk.spans=sp; out.push(blk); brk=false;
+  }
+  return out;
+}
+function fromBlocks(blocks){
+  if(!blocks||!blocks.length) return '<p><br></p>';
+  return blocks.map(b=>(b.break?'<div class="orn" contenteditable="false"><svg><use href="#orn"/></svg></div>':'')+
+    (b.type==='quote'?'<blockquote>':(b.opening?'<p class="open">':'<p>'))+
+    b.spans.map(x=>x.i?`<i>${esc(x.t)}</i>`:esc(x.t)).join('')+(b.type==='quote'?'</blockquote>':'</p>')).join('');
+}
+const textOf=blocks=>(blocks||[]).map(b=>b.spans.map(x=>x.t).join('')).join(' ');
+const wordsOf=blocks=>textOf(blocks).trim().split(/\s+/).filter(Boolean).length;
+const canBloom=(p,blocks)=>p.kind==='long'&&p.tended_days.length>=ILLUM_DAYS&&wordsOf(blocks)>=ILLUM_WORDS;
+
+/* A small sky that shows the hour something was written: the sun by day, the moon by night */
+function skyGlyph(d){
+  const h=d.getHours()+d.getMinutes()/60, day=h>=6&&h<18, t=day?(h-6)/12:(((h-18)+24)%24)/12, a=t*Math.PI;
+  const x=+(20-15*Math.cos(a)).toFixed(1), y=+(19-15*Math.sin(a)).toFixed(1);
+  const orb=day?`<circle cx="${x}" cy="${y}" r="3.2" fill="currentColor"/><circle cx="${x}" cy="${y}" r="5.6" fill="none" stroke="currentColor" stroke-width=".8" opacity=".5"/>`
+    :`<path fill="currentColor" d="M${x+1.5} ${y-3.5}A3.8 3.8 0 1 0 ${x+1.5} ${y+3.5}A4.4 4.4 0 0 1 ${x+1.5} ${y-3.5}Z"/>`;
+  return `<svg class="skyg" viewBox="0 0 40 24" aria-hidden="true"><path d="M5 19A15 15 0 0 1 35 19" fill="none" stroke="currentColor" stroke-width=".9" stroke-dasharray="1.2 2.4" opacity=".55"/><path d="M1 19.5H39" stroke="currentColor" stroke-width=".9" opacity=".7"/>${orb}</svg>`;
+}
+
+/* A tiny local stand-in for Supabase, so the whole loop can be felt before it's wired up */
+const DB={
+  all(){ try{ return JSON.parse(localStorage.getItem('waha-posts')||'[]'); }catch(e){ return []; } },
+  write(list){ try{ localStorage.setItem('waha-posts',JSON.stringify(list)); return true; }catch(e){ return false; } },
+  mine(w){ return this.all().filter(p=>p.writer===w).sort((a,b)=>(b.updated_at||'').localeCompare(a.updated_at||'')); },
+  get(id){ return this.all().find(p=>p.id===id)||null; },
+  put(p){ const l=this.all(), i=l.findIndex(x=>x.id===p.id); if(i<0) l.push(p); else l[i]=p; return this.write(l); },
+  del(id){ return this.write(this.all().filter(p=>p.id!==id)); }
+};
+(function seed(){
+  if(store.get('waha-seeded-v3')) return;
+  const SEED={"amir": [{"title": "The Well Remembers", "kind": "long", "status": "published", "body": [{"type": "p", "opening": true, "spans": [{"t": "My grandmother used to say that a well is the only thing in the desert with a memory. Everything else forgets. The wind forgets which way it came. The dunes forget their own shapes by morning. But the well remembers every rope ever lowered into it, every face that ever leaned over its edge looking for a reflection."}]}, {"type": "p", "spans": [{"t": "I went back this year. The village has electricity now, and a pharmacy, and a boy who sells phone credit from a folding table under the acacia. But the well is still there, ringed in stone worn smooth as soap by a hundred years of hands."}]}, {"type": "quote", "spans": [{"t": "We do not drink water. We drink the patience of the earth."}]}, {"type": "p", "spans": [{"t": "I lowered the bucket the way she taught me — slowly, so the water has time to decide it wants to come up. When it broke the surface I swear I heard it: not a splash, but something closer to a name."}]}, {"type": "p", "break": true, "spans": [{"t": "I am writing this at dawn, before the heat arrives, because this is the hour the oasis tells the truth. The palms are still blue. The water hasn't decided what color to be yet. And somewhere underneath all of it, the well is keeping track."}]}], "days": [1, 0], "pub": [0, 5, 42]}, {"title": "The Ferryman’s Daughter", "kind": "long", "status": "draft", "body": [{"type": "p", "spans": [{"t": "The ferry across the canal costs two pounds, or a story if you’re short on change. I have paid in both."}]}, {"type": "p", "spans": [{"t": "The ferryman is a quiet man named Yusuf, and his daughter does all the talking for him. She collects the fares, tells you where you’re going before you say it, and corrects his directions to tourists with the weary patience of a schoolteacher."}]}, {"type": "p", "spans": [{"t": "“Water doesn’t care who rows. Only that someone does.”"}]}, {"type": "p", "spans": [{"t": "She said it without looking up from counting coins. I think about it every time I sit down to write."}]}], "days": [2, 1], "upd": [1, 22, 10]}, {"title": "The Long Water", "kind": "long", "status": "draft", "body": [{"type": "p", "opening": true, "spans": [{"t": "There is a story they tell in the oasis about a man who tried to follow the spring back to where it began. He was not a scholar or a holy man. He was a date farmer with a bad knee and a stubborn heart, and one summer, when the water in his channel ran thinner than it had in forty years, he decided that he was owed an explanation."}]}, {"type": "p", "spans": [{"t": "He started at his own field, where the water arrived each morning through a ditch no wider than his forearm. He followed the ditch to the main channel, and the main channel to the pool beneath the old palms, where the women washed clothes and the boys dared each other to touch the bottom. From there the water came up out of the ground itself, cold and clear, from a crack in the limestone no one had ever thought to question."}]}, {"type": "p", "spans": [{"t": "So he questioned it. He knelt at the edge of the spring and put his ear to the stone, the way his father used to listen to the chest of a sick goat. He heard something — a hum, a movement, a sound like a crowd very far away — and he understood, the way you understand things at the end of a long day, that the water was not born here. It was only "}, {"t": "arriving", "i": true}, {"t": "."}]}, {"type": "p", "break": true, "spans": [{"t": "I first heard this story from my grandmother, and I have heard it a dozen times since, from a dozen people, and no two of them agree on how it ends. That is part of why I have been writing it down. Not to settle it. To keep all the endings in one place."}]}, {"type": "p", "spans": [{"t": "In my grandmother's version, the farmer walks west. He takes a skin of water, a bag of dates, and a walking stick cut from a tamarisk, and he walks into the open desert with nothing but the hum in his ears to guide him. Every night he lies down and presses his ear to the sand, and every night the sound is a little closer, a little louder, until on the seventh night it is so loud he cannot sleep."}]}, {"type": "p", "spans": [{"t": "On the eighth morning he comes to a place where the sand is darker than it should be, and cool to the touch, and he digs with his hands until his fingers bleed. A foot down, the sand is damp. Two feet down, it is wet. Three feet down, he finds water moving — not standing, "}, {"t": "moving", "i": true}, {"t": " — a river running in the dark beneath the desert, older than any city, wider than any canal."}]}, {"type": "quote", "spans": [{"t": "The spring is not the beginning. It is only the place where the long water finally lets us see it."}]}, {"type": "p", "spans": [{"t": "My grandmother always paused there, as if she were listening for the hum herself. Then she would say that the farmer sat beside his little hole for a whole day, just watching the water pass, and that when he finally walked home, he never complained about the channel again. Not because it ran fuller. Because he knew where it came from, and how far it had travelled, and how little it owed him."}]}, {"type": "p", "break": true, "spans": [{"t": "The version I heard from Hassan, who tends the palms, is less forgiving. In his telling the farmer finds the underground river and decides it should be his. He digs a trench to bring it straight to his own field, bypassing the spring, bypassing the pool, bypassing everyone. For one season he has more water than he knows what to do with. His dates are the fattest in the valley. He sells them in the city and comes home with silk for his wife."}]}, {"type": "p", "spans": [{"t": "And then the spring goes quiet. The pool shrinks to a puddle. The women stop coming to wash, and the boys stop daring each other, and the old palms begin to yellow at the tips. The whole oasis, Hassan says, held its breath, waiting to see what the farmer would do."}]}, {"type": "p", "spans": [{"t": "“What did he do?” I asked."}]}, {"type": "p", "spans": [{"t": "Hassan shrugged. “What do you think? He filled in the trench. He was greedy, not stupid.” Then he laughed so hard he had to sit down, and I never found out if he was joking."}]}, {"type": "p", "break": true, "spans": [{"t": "Simi's mother tells it differently again. In her version the farmer never finds the river at all. He walks for seven days, and on the eighth morning there is nothing but sand in every direction, and the hum has gone silent. He has no water left. He lies down to die."}]}, {"type": "p", "spans": [{"t": "But the night is cold, and in the morning there is dew on his cloak, a few drops caught in the wool, and he licks them off and finds he can stand. The next morning, the same. He walks home on dew, a mouthful at a time, and it takes him a month, and by the time he arrives his family has already mourned him and given away his shoes."}]}, {"type": "p", "spans": [{"t": "“So what did he learn?” I asked her."}]}, {"type": "p", "spans": [{"t": "She looked at me as though I were a little slow. “That water does not come from one place,” she said. “It comes from everywhere, a little at a time. You only notice it when you are thirsty enough.”"}]}, {"type": "p", "break": true, "spans": [{"t": "I have been working on this piece for a long time now. Longer than anything else I have written here. I started it in the heat at the end of summer, and I am finishing it now that the evenings have turned cool enough to sit outside. Some days I added a page. Some days I added a sentence, and then took it out again."}]}, {"type": "p", "spans": [{"t": "I think I kept returning to it because I recognized myself in that farmer — not the brave one, not the greedy one, but the one who kneels at the edge of something he has taken for granted his whole life and suddenly needs to know where it comes from. The words I write here arrive each morning like water in a ditch. I never asked where from."}]}, {"type": "quote", "spans": [{"t": "Everything that reaches you has travelled a long way to get here."}]}, {"type": "p", "spans": [{"t": "Maybe that is the real ending, the one under all the others. The spring, the dew, the river in the dark — they are all the same water, at different moments in its journey. My grandmother's farmer, Hassan's farmer, Simi's mother's farmer: the same man, at different moments in his."}]}, {"type": "p", "spans": [{"t": "Tonight I went down to the pool after the lanterns were lit. The water was very still. I knelt at the edge, a little embarrassed, and put my ear close to the stone."}]}, {"type": "p", "spans": [{"t": "I am not going to tell you what I heard. But I sat there a long time, and when I stood up my knees were wet, and I did not mind at all."}]}], "days": [44, 37, 25, 12], "upd": [12, 23, 40]}], "simi": [{"title": "Bread Before the Heat", "kind": "long", "status": "published", "body": [{"type": "p", "opening": true, "spans": [{"t": "The bakery on our lane opens before the call to prayer has finished echoing. By six there is a line — women in housecoats, a soldier home on leave, two schoolgirls sharing one coin between them and arguing about how to spend it."}]}, {"type": "p", "spans": [{"t": "I go for the round loaves that come out puffed like a held breath and collapse the moment you tear them. Umm Karim, who runs the oven, has never once given me correct change. She rounds up or down depending, I think, on her opinion of my day."}]}, {"type": "quote", "spans": [{"t": "Bread is a promise you keep every morning, whether anyone thanks you or not."}]}, {"type": "p", "spans": [{"t": "I walked home with the loaf warm against my ribs and thought about all the promises I keep without noticing. Most of them are small. Most of them are bread."}]}], "days": [4, 3], "pub": [3, 7, 15]}, {"title": "", "kind": "short", "status": "draft", "body": [{"type": "p", "spans": [{"t": "Watched a heron stand in the shallows for twenty minutes without moving. I have never been that sure of anything."}]}], "days": [0], "upd": [0, 6, 5]}]};
+  const ago=(n,h=12,m=0)=>{ const d=new Date(); d.setDate(d.getDate()-n); d.setHours(h,m,0,0); return d; };
+  const list=[];
+  for(const w in SEED) SEED[w].forEach((x,i)=>{
+    const upd=x.pub?ago(...x.pub):ago(...x.upd);
+    list.push({id:'seed-'+w+i, writer:w, kind:x.kind, status:x.status, title:x.title, body:x.body, revision:null,
+      created_at:ago(Math.max(...x.days)).toISOString(), updated_at:upd.toISOString(),
+      published_at:x.pub?upd.toISOString():null, tended_days:x.days.map(n=>dayKey(ago(n))).sort(), illuminated:false});
+  });
+  DB.write(list); store.set('waha-seeded-v3','1');
+})();
+
+/* ---------- The piece on the page ---------- */
+let cur=null, mode='long', saveT=0, pending=false, savedAt=null, saveFailed=false;
+const blank=kind=>({id:null,writer:B.dataset.author,kind:kind||'long',status:'draft',title:'',body:[],revision:null,
+  created_at:null,updated_at:null,published_at:null,tended_days:[],illuminated:false});
+const view=p=>p.status==='published'&&p.revision?p.revision:{title:p.title,body:p.body};
+
+function applyKind(k){
+  mode=k; B.classList.toggle('short',k==='short');
+  document.querySelectorAll('.mode button').forEach(b=>{const on=b.dataset.mode===k;b.classList.toggle('on',on);b.setAttribute('aria-selected',on);});
+  const act=document.querySelector(`.mode button[data-mode=${k}]`);
+  $('slider').style.left=act.offsetLeft+'px'; $('slider').style.width=act.offsetWidth+'px';
+  ed.dataset.ph=COPY[k].ph;
+  $('hint').textContent=COPY[k].hint; $('hint').classList.toggle('gone',!!store.get('waha-hint-'+k)||!!(cur&&cur.id));
+}
+function openPiece(p){
+  cur=p; store.set('waha-open-'+B.dataset.author,p.id||'');
+  const v=view(p); titleEl.textContent=v.title||''; ed.innerHTML=fromBlocks(v.body);
+  savedAt=p.updated_at?new Date(p.updated_at):null; saveFailed=false; pending=false;
+  applyKind(p.kind); normalize(); refresh();
+  lastRange=null; tide.classList.remove('show'); scrollTo({top:0});
+  setTimeout(()=>{ const f=ed.firstElementChild; if(f){ const r=document.createRange(); r.selectNodeContents(f); r.collapse(false); lastRange=r; place(); render(); } },60);
+}
+function firstPiece(){
+  const w=B.dataset.author, id=store.get('waha-open-'+w), p=id&&DB.get(id);
+  if(p&&p.writer===w) return p;
+  const l=DB.mine(w); return l.find(x=>x.status==='draft')||l[0]||blank('long');
+}
+document.querySelectorAll('.mode button').forEach(b=>b.addEventListener('click',()=>{
+  if(b.dataset.mode===mode||cur.status==='published') return;
+  cur.kind=b.dataset.mode; applyKind(cur.kind); save();
+}));
+addEventListener('resize',()=>{const act=document.querySelector('.mode button.on'); if(act){$('slider').style.left=act.offsetLeft+'px';$('slider').style.width=act.offsetWidth+'px';}});
+
+/* ---------- Safeguard 1: save as you go — a quiet autosave after every pause ---------- */
+function save(){ pending=true; clearTimeout(saveT); saveT=setTimeout(commit,700); refresh(); }
+function commit(){
+  clearTimeout(saveT);
+  if(!cur) return;
+  const title=cur.kind==='long'?titleEl.textContent.trim():'';
+  const body=toBlocks(), v=view(cur);
+  pending=false;
+  if((v.title||'')===title&&JSON.stringify(v.body||[])===JSON.stringify(body)){ refresh(); return; }
+  if(!cur.id){
+    if(!title&&!body.length){ refresh(); return; }
+    cur.id='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); cur.created_at=new Date().toISOString();
+  }
+  if(cur.status==='published') cur.revision={title,body};       // edits to a live piece wait privately until "Save changes"
+  else { cur.title=title; cur.body=body; }
+  const d=dayKey(); if(!cur.tended_days.includes(d)) cur.tended_days.push(d);   // another day spent with this piece
+  cur.updated_at=new Date().toISOString();
+  const ok=DB.put(cur); saveFailed=!ok; if(ok) savedAt=new Date();
+  store.set('waha-open-'+cur.writer,cur.id);
+  refresh();
+}
+addEventListener('pagehide',commit);
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) commit(); });
+
+/* ---------- Status line, growth toward Illuminated, and the Publish button ---------- */
+function status(){ refresh(); }
+function refresh(){
+  if(!cur) return;
+  const short=cur.kind==='short', title=titleEl.textContent.trim(), body=toBlocks();
+  const n=textOf(body).replace(/\s+/g,' ').trim().length, words=wordsOf(body);
+  // short-note meter
+  const left=LIMIT-n;
+  $('countTxt').textContent=left>=0?`${left} left`:`${-left} over`;
+  $('meterFill').style.width=Math.min(100,n/LIMIT*100)+'%';
+  $('count').classList.toggle('low',left<=30&&left>=0); $('count').classList.toggle('over',left<0);
+  const ready=short?(n>0&&left>=0):(n>0&&title.length>0);
+  // publish / save changes
+  const pb=$('publishBtn'), lbl=pb.querySelector('.t');
+  if(cur.status==='published'){
+    const changed=!!cur.revision||pending;
+    lbl.textContent=changed?'Save changes':'Published'; pb.disabled=!changed||!ready; pb.classList.toggle('done',!changed);
+    pb.title=changed?'Make your changes live':'Up to date — anything you change waits here until you save it';
+  } else {
+    lbl.textContent='Publish'; pb.disabled=!ready; pb.classList.remove('done');
+    pb.title=ready?'':(short?(n?'Trim it to 280 characters':'Write something first'):'Add a title and some words first');
+  }
+  $('mode').classList.toggle('locked',cur.status==='published');
+  // when line
+  if(cur.status==='published'){ const d=new Date(cur.published_at);
+    $('when').innerHTML=`${skyGlyph(d)}Published ${fmtDate(cur.published_at)} · ${fmtTime(d)}${cur.revision||pending?' · editing':''}`; }
+  else $('when').textContent=COPY[cur.kind].when;
+  // status line (safeguards)
+  const st=$('status'); st.classList.toggle('bad',saveFailed);
+  const days=cur.tended_days.length;
+  const bytes=new Blob([JSON.stringify({title,body})]).size;
+  if(saveFailed) st.textContent='Couldn’t save on this device — copy your words somewhere safe before closing.';
+  else {
+    const parts=[];
+    if(!short) parts.push(`${words.toLocaleString()} word${words===1?'':'s'}`);
+    if(days) parts.push(`tended on ${days} day${days===1?'':'s'}`);
+    parts.push(pending?'saving…':savedAt?(cur.status==='published'&&!cur.revision?'live in the oasis':`saved ${fmtTime(savedAt)}`):'not saved yet');
+    st.innerHTML=esc(parts.join(' · '))+(bytes>SIZE_WARN?`<span class="warn">This piece is very large (${Math.round(bytes/1024)} KB). It’s still safe — mention it to Mike before it doubles.</span>`:'');
+  }
+  // growth toward Illuminated
+  const g=$('grow'); const bloom=cur.illuminated||(cur.status!=='published'&&canBloom(cur,body));
+  sheet.classList.toggle('illum',!short&&bloom);
+  if(short){ g.className='grow'; }
+  else if(cur.illuminated){ g.className='grow show'; g.innerHTML='<b>Illuminated</b><br>This piece was released in its gilded frame.'; }
+  else if(cur.status==='published'){ g.className='grow'; }
+  else if(bloom){ g.className='grow show'; g.innerHTML=`<b>Illuminated</b><br>Tended across ${days} days, this piece has grown into something rare. It will be released in its gilded frame.`; }
+  else if(days>=2&&words>=150){
+    const prog=Math.min(days/ILLUM_DAYS,words/ILLUM_WORDS);
+    const need=[]; if(days<ILLUM_DAYS) need.push(`${ILLUM_DAYS-days} more day${ILLUM_DAYS-days===1?'':'s'} of tending`); if(words<ILLUM_WORDS) need.push(`${(ILLUM_WORDS-words).toLocaleString()} more words`);
+    g.className='grow show'; g.innerHTML=`This piece is growing. ${need.join(' and ')} and it will be Illuminated.<div class="thread"><i style="width:${Math.round(prog*100)}%"></i></div>`;
+  } else g.className='grow';
+}
+
+/* ---------- Your pieces ---------- */
+function openDrawer(){ commit(); renderList(); $('drawer').classList.add('open'); $('scrim').classList.add('open'); }
+function closeDrawer(){ $('drawer').classList.remove('open'); $('scrim').classList.remove('open'); }
+$('scrim').addEventListener('click',closeDrawer); $('dX').addEventListener('click',closeDrawer);
+addEventListener('keydown',e=>{ if(e.key==='Escape') closeDrawer(); });
+function renderList(){
+  const w=B.dataset.author, list=DB.mine(w);
+  $('dTitle').textContent=WRITERS[w].name+'’s pieces'; $('dSeal').innerHTML=`<use href="#seal-${w}"/>`;
+  if(!list.length){ $('plist').innerHTML='<p class="pempty">Nothing here yet. Your first piece is waiting.</p>'; return; }
+  $('plist').innerHTML=list.map(p=>{
+    const v=view(p), words=wordsOf(v.body), days=p.tended_days.length;
+    const name=p.kind==='short'?(textOf(v.body).slice(0,70)+(textOf(v.body).length>70?'…':'')||'An empty note'):(v.title||'Untitled');
+    const ready=p.status!=='published'&&canBloom(p,p.body);
+    const tags=(p.illuminated?'<span class="tag gold">Illuminated</span>':ready?'<span class="tag gold">Ready to illuminate</span>':'')+
+      (p.status==='published'?(p.revision?'<span class="tag edit">Unsaved changes</span>':'<span class="tag live">Live</span>'):'<span class="tag">Draft</span>');
+    const meta=p.status==='published'?`published ${fmtDate(p.published_at)}`:`${p.kind==='short'?'a note':words.toLocaleString()+' words'} · tended ${days} day${days===1?'':'s'}`;
+    return `<div class="pc${p.illuminated||ready?' illum':''}${cur&&p.id===cur.id?' cur':''}" data-id="${p.id}">
+      <button class="pc-main"><svg><use href="#i-${p.kind}"/></svg><div class="pc-txt"><b>${esc(name)}</b><span>${tags}${meta}</span></div></button>
+      <button class="pc-del" aria-label="Delete">×</button>
+      <div class="pc-confirm">Delete forever? <button class="yes">Delete</button><button class="no">Keep</button></div></div>`;
+  }).join('');
+}
+$('plist').addEventListener('click',e=>{
+  const card=e.target.closest('.pc'); if(!card) return; const id=card.dataset.id;
+  if(e.target.closest('.pc-del')){ card.classList.toggle('confirm'); return; }
+  if(e.target.closest('.no')){ card.classList.remove('confirm'); return; }
+  if(e.target.closest('.yes')){
+    DB.del(id); if(cur&&cur.id===id) openPiece(DB.mine(B.dataset.author)[0]||blank('long')); renderList(); return;
+  }
+  if(e.target.closest('.pc-main')){ const p=DB.get(id); if(p){ setPreview(false); openPiece(p); closeDrawer(); } }
+});
+function newPiece(){ commit(); setPreview(false); openPiece(blank('long')); closeDrawer();
+  if(TOUCH) enterEdit(titleEl); else titleEl.focus(); }
+$('newPiece').addEventListener('click',newPiece);
+$('switchW').addEventListener('click',()=>{ commit(); setAuthor(B.dataset.author==='amir'?'simi':'amir'); openPiece(firstPiece()); renderList(); });
+
+/* ---------- Selection helpers ---------- */
+let lastRange=null, lastInput=0;
+function blockOf(node){
+  if(!node||node===ed) return null;
+  while(node && node.parentNode!==ed){ node=node.parentNode; if(!node||node===document) return null; }
+  return node;
+}
+function currentBlock(){
+  if(!lastRange) return null;
+  if(lastRange.startContainer===ed) return ed.children[lastRange.startOffset]||ed.lastElementChild;
+  return blockOf(lastRange.startContainer);
+}
+function italicAt(){
+  if(!lastRange) return null;
+  let n=lastRange.startContainer; if(n.nodeType===3) n=n.parentNode;
+  const it=n.closest&&n.closest('i,em'); return it&&ed.contains(it)?it:null;
+}
+function restore(){ if(!lastRange) return; if(editing()) ed.focus({preventScroll:true}); const s=getSelection(); s.removeAllRanges(); s.addRange(lastRange); }
+function caret(node,atStart){ const r=document.createRange(); r.selectNodeContents(node); r.collapse(!!atStart);
+  const s=getSelection(); s.removeAllRanges(); s.addRange(r); lastRange=r.cloneRange(); }
+const newP=()=>{const p=document.createElement('p');p.innerHTML='<br>';return p;};
+function makeOrn(){const d=document.createElement('div');d.className='orn';d.contentEditable='false';d.innerHTML='<svg><use href="#orn"/></svg>';return d;}
+function flash(el){el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');
+  el.addEventListener('animationend',()=>{el.classList.remove('flash');if(!el.className)el.removeAttribute('class');save();},{once:true});}
+
+/* ---------- Keep the page tidy behind the scenes ---------- */
+function normalize(){
+  [...ed.childNodes].forEach(n=>{
+    if(n.nodeType===3){ if(n.textContent.trim()){const p=document.createElement('p');n.replaceWith(p);p.appendChild(n);} else n.remove(); }
+    else if(n.nodeType===1 && n.tagName==='DIV' && !n.classList.contains('orn')){const p=document.createElement('p');p.innerHTML=n.innerHTML||'<br>';n.replaceWith(p);}
+    else if(n.nodeType===1 && n.tagName==='BR'){n.replaceWith(newP());}
+  });
+  // a break always belongs to the line below it
+  [...ed.querySelectorAll('.orn')].forEach(o=>{ const nx=o.nextElementSibling; if(!nx||nx.classList.contains('orn')) o.after(newP()); });
+  if(!ed.firstElementChild) ed.appendChild(newP());
+  [...ed.querySelectorAll('p.open')].slice(1).forEach(p=>p.classList.remove('open'));
+  ed.classList.toggle('empty',!ed.textContent.trim() && !ed.querySelector('.orn,blockquote'));
+}
+
+/* ---------- Line state: what this line has switched on ---------- */
+function lineState(){
+  const b=currentBlock();
+  const prev=b&&b.previousElementSibling;
+  return {
+    b,
+    open: !!(b&&b.tagName==='P'&&b.classList.contains('open')),
+    break: !!(prev&&prev.classList.contains('orn')),
+    quote: !!(b&&b.tagName==='BLOCKQUOTE'),
+    em: !!italicAt()
+  };
+}
+
+/* ---------- The four toggles ---------- */
+const ACT={
+  open(){ const b=currentBlock(); if(!b||b.tagName!=='P') return;
+    if(b.classList.contains('open')) b.classList.remove('open');
+    else{ ed.querySelectorAll('p.open').forEach(x=>x.classList.remove('open')); b.classList.add('open'); }
+    flash(b); restore(); },
+  break(){ const b=currentBlock(); if(!b) return; const prev=b.previousElementSibling;
+    if(prev&&prev.classList.contains('orn')) prev.remove();
+    else{ const o=makeOrn(); b.before(o); flash(o); }
+    restore(); },
+  quote(){
+    restore(); const b=currentBlock(); if(!b) return;
+    if(b.tagName==='BLOCKQUOTE'){ const p=document.createElement('p'); p.innerHTML=b.innerHTML; b.replaceWith(p); caret(p); flash(p); return; }
+    if(b.tagName!=='P') return;
+    const s=getSelection(), r=s.rangeCount?s.getRangeAt(0):null;
+    const q=document.createElement('blockquote');
+    if(r && !r.collapsed && b.contains(r.startContainer) && b.contains(r.endContainer) && r.toString().trim().length < b.textContent.trim().length){
+      const pre=document.createRange(); pre.setStart(b,0); pre.setEnd(r.startContainer,r.startOffset);
+      const post=document.createRange(); post.setStart(r.endContainer,r.endOffset); post.setEnd(b,b.childNodes.length);
+      const nodes=[], t1=document.createElement('div'), t2=document.createElement('div');
+      t1.appendChild(pre.cloneContents()); q.appendChild(r.cloneContents()); t2.appendChild(post.cloneContents());
+      if(t1.textContent.trim()){const p=document.createElement('p');p.className=b.className;p.append(...t1.childNodes);nodes.push(p);}
+      nodes.push(q);
+      if(t2.textContent.trim()){const p=document.createElement('p');p.append(...t2.childNodes);nodes.push(p);}
+      b.replaceWith(...nodes);
+    } else { q.innerHTML=b.innerHTML; b.replaceWith(q); }
+    if(q.children.length===0) q.textContent=q.textContent.trim().replace(/^["“”']+|["“”']+$/g,'');
+    caret(q); flash(q);
+  },
+  em(){
+    const it=italicAt();
+    if(it){ // switch off: unwrap the italic run this spot is in
+      const first=it.firstChild, last=it.lastChild;
+      it.replaceWith(...it.childNodes);
+      if(first&&last){ const r=document.createRange(); r.setStartBefore(first); r.setEndAfter(last); lastRange=r.cloneRange(); restore(); }
+      return;
+    }
+    if(!lastRange) return;
+    const r=lastRange.cloneRange();
+    if(r.collapsed){ // nothing selected: lean on the word you're on
+      let n=r.startContainer, off=r.startOffset;
+      if(n.nodeType!==3){ // cursor sits between elements (e.g. end of a line): find the nearest text
+        const before=n.childNodes[off-1], after=n.childNodes[off];
+        const deep=(x,last)=>{ while(x&&x.nodeType!==3){ x=last?x.lastChild:x.firstChild; } return x; };
+        const tb=deep(before,true), ta=deep(after,false);
+        if(tb){ n=tb; off=tb.data.length; } else if(ta){ n=ta; off=0; } else return;
+      }
+      const t=n.data; let a=off, z=a;
+      while(a>0&&/\S/.test(t[a-1]))a--; while(z<t.length&&/\S/.test(t[z]))z++;
+      while(z>a&&/[.,;:!?”"’)]/.test(t[z-1]))z--; while(a<z&&/[“"‘(]/.test(t[a]))a++;
+      if(a===z) return; r.setStart(n,a); r.setEnd(n,z);
+    }
+    if(blockOf(r.startContainer)!==blockOf(r.endContainer)) return;
+    const i=document.createElement('i'); i.appendChild(r.extractContents()); r.insertNode(i);
+    i.querySelectorAll('i,em').forEach(x=>x.replaceWith(...x.childNodes));
+    const nr=document.createRange(); nr.selectNodeContents(i); lastRange=nr.cloneRange(); restore();
+  }
+};
+function run(act){
+  if(mode==='short' && act!=='em') return;
+  ACT[act](); normalize(); save(); dismissed=null;
+  lastInput=0; setState('waking'); place(); clearTimeout(tReady); tReady=setTimeout(()=>setState('ready'),600);
+}
+function onTap(el,fn){
+  let tch=false;
+  el.addEventListener('touchstart',e=>{e.preventDefault();tch=true;},{passive:false});
+  el.addEventListener('touchend',e=>{e.preventDefault(); if(tch) fn(); tch=false;},{passive:false});
+  el.addEventListener('mousedown',e=>e.preventDefault());
+  el.addEventListener('click',fn);
+}
+document.querySelectorAll('.tool').forEach(t=>onTap(t,()=>{ if(!t.disabled) run(t.dataset.act); }));
+
+/* Tapping a break just puts you on the line it belongs to — the Break toggle shows it's on */
+ed.addEventListener('click',e=>{ const o=e.target.closest('.orn'); if(!o) return; const nx=o.nextElementSibling; if(nx){ if(editing()) ed.focus(); caret(nx,true); place(); render(); } });
+
+ed.addEventListener('keydown',e=>{
+  if(e.key==='Enter' && !e.shiftKey){ const b=currentBlock();
+    if(b && b.tagName==='BLOCKQUOTE'){ e.preventDefault(); const p=newP(); b.after(p); caret(p,true); normalize(); save(); }
+  }
+});
+titleEl.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); ed.focus(); caret(ed.firstElementChild,false);} });
+titleEl.addEventListener('input',save);
+ed.addEventListener('paste',e=>{ e.preventDefault(); const t=(e.clipboardData||window.clipboardData).getData('text/plain');
+  const html=t.split(/\n{2,}/).map(x=>x.trim()).filter(Boolean).map(x=>`<p>${x.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])).replace(/\n/g,' ')}</p>`).join('');
+  document.execCommand('insertHTML',false,html||''); });
+
+/* ---------- Reading the moment ---------- */
+let dismissed=null;
+const sentences=t=>(t.match(/[^.!?]+[.!?]+["”’]?/g)||[]).length||(t.trim()?1:0);
+function sinceBreak(idx){let n=0;for(let i=idx-1;i>=0;i--){const x=ed.children[i];if(x.classList.contains('orn'))break;if(x.textContent.trim().length>140)n++;}return n;}
+function suggest(st){
+  const b=st.b; if(!b) return null;
+  const s=getSelection(); const sel=s.rangeCount&&!s.isCollapsed&&ed.contains(s.anchorNode)?s.toString().trim():'';
+  const t=b.textContent.trim(), blocks=[...ed.children], idx=blocks.indexOf(b);
+  const firstText=blocks.find(x=>x.tagName==='P'&&x.textContent.trim());
+  let out=null;
+  if(mode==='short'){
+    if(sel && sel.length<=80 && !st.em) out={act:'em',why:'Lean on these words?',lbl:'Italic'};
+  } else if(sel){
+    if(sel.length>24 && sel.length<170 && /[.!?”"]$/.test(sel)) out={act:'quote',why:'That reads like a line worth lifting out.',lbl:'Quote it'};
+    else if(sel.length<=60 && !st.em) out={act:'em',why:'Lean on these words?',lbl:'Italic'};
+  }
+  else if(b.tagName==='P'&&b===firstText&&!ed.querySelector('p.open')&&t.length>30) out={act:'open',why:'Every piece deserves a first breath.',lbl:'Opening letter'};
+  else if(b.tagName==='P'&&!t&&!st.break&&sinceBreak(idx)>=2) out={act:'break',why:'A pause before the next part?',lbl:'Add a break'};
+  else if(b.tagName==='P'&&/^["“].+["”]$/.test(t)&&t.length<190) out={act:'quote',why:'Someone said this — let it stand alone?',lbl:'Quote it'};
+  else if(b.tagName==='P'&&b!==firstText&&t.length>16&&t.length<120&&sentences(t)===1&&/[.!?]$/.test(t)) out={act:'quote',why:'This line could stand on its own.',lbl:'Quote it'};
+  if(out&&dismissed&&dismissed.el===b&&dismissed.act===out.act) return null;
+  if(out) out.el=b;
+  return out;
+}
+
+let current=null;
+function render(){
+  const st=lineState(), b=st.b;
+  current=B.classList.contains('ready')?suggest(st):null;
+  const sel=getSelection(), hasSel=sel.rangeCount&&!sel.isCollapsed;
+  document.querySelectorAll('.tool').forEach(t=>{
+    const a=t.dataset.act, on=st[a];
+    t.classList.toggle('on',on); t.setAttribute('aria-pressed',on);
+    t.classList.toggle('suggest',!!current&&current.act===a);
+    let dis=false;
+    if(!b) dis=true;
+    else if(a==='open') dis=b.tagName!=='P'||(!b.textContent.trim()&&!on);
+    else if(a==='break') dis=!on&&(!b.previousElementSibling);
+    else if(a==='em') dis=!on&&!hasSel&&!b.textContent.trim();
+    t.disabled=dis;
+    t.setAttribute('aria-label',t.querySelector('.lbl').textContent+(on?' (on for this line — tap to turn off)':''));
+  });
+  if(current){
+    $('tideWhy').textContent=current.why; $('tideLbl').textContent=current.lbl;
+    $('tideIc').innerHTML=`<use href="#i-${current.act}"/>`; tide.classList.add('show'); hideNudge();
+  } else tide.classList.remove('show');
+}
+onTap($('tideGo'),()=>{ if(current) run(current.act); });
+onTap($('tideNo'),()=>{ if(current) dismissed={el:current.el,act:current.act}; render(); });
+
+/* ---------- Rhythm: fade while typing, wake on pause ---------- */
+let tWake,tReady;
+function setState(s){
+  B.classList.remove('typing','waking','ready'); B.classList.add(s);
+  if(s==='typing') tide.classList.remove('show');
+  render();
+}
+ed.addEventListener('input',()=>{
+  lastInput=Date.now(); normalize(); save(); dismissed=null;
+  setState('typing'); clearTimeout(tWake); clearTimeout(tReady);
+  tWake=setTimeout(()=>setState('waking'),800);
+  tReady=setTimeout(()=>setState('ready'),1600);
+  place();
+  if(!$('hint').classList.contains('gone')){ $('hint').classList.add('gone'); store.set('waha-hint-'+mode,'1'); }
+});
+document.addEventListener('selectionchange',()=>{
+  const s=getSelection(); if(!s.rangeCount||!ed.contains(s.anchorNode)) return;
+  lastRange=s.getRangeAt(0).cloneRange();
+  place();
+  if(Date.now()-lastInput<250) return;
+  clearTimeout(tWake); clearTimeout(tReady);
+  setState('waking'); tReady=setTimeout(()=>setState('ready'),450);
+});
+
+/* ---------- Rails follow the line you're on ---------- */
+let raf=0;
+function place(){ cancelAnimationFrame(raf); raf=requestAnimationFrame(()=>{
+  if(!lastRange) return;
+  const sr=sheet.getBoundingClientRect();
+  let r=lastRange.getBoundingClientRect();
+  if(!r||(r.height===0&&r.top===0)){ const b=currentBlock(); if(!b) return; r=b.getBoundingClientRect(); }
+  const mid=r.top-sr.top+(r.height||28)/2;
+  const yL=Math.max(0,mid-railL.offsetHeight/2), yR=Math.max(0,mid-railR.offsetHeight/2);
+  railL.style.transform=`translateY(${yL}px)`; railR.style.transform=`translateY(${yR}px)`;
+  const lm=$('linemark'), b=currentBlock();
+  if(TOUCH && !editing() && b && b.getBoundingClientRect){
+    const br=b.getBoundingClientRect();
+    lm.style.left=(ed.offsetLeft-10)+'px'; lm.style.width=(ed.offsetWidth+20)+'px';
+    lm.style.transform=`translateY(${br.top-sr.top-6}px)`; lm.style.height=(br.height+12)+'px'; lm.classList.add('show');
+  } else lm.classList.remove('show');
+});}
+addEventListener('resize',place);
+if(window.visualViewport){
+  const vv=visualViewport;
+  const fit=()=>{ tide.style.bottom=Math.max(16,innerHeight-(vv.offsetTop+vv.height)+12)+'px'; };
+  vv.addEventListener('resize',fit); vv.addEventListener('scroll',fit); fit();
+}
+
+/* ---------- Preview ---------- */
+(function scene(){
+  const palm=(x,s,r)=>{const h=110*s,w=70*s;return `<use href="#palm" x="${x}" y="${116-h}" width="${w}" height="${h}" fill="#4c3845" transform="rotate(${r} ${x+w/2} 116)"/>`;};
+  $('pvScene').innerHTML=`<path fill="#d8aaa0" d="M0 70 C240 40 480 46 720 62 C960 78 1200 44 1440 56 V120 H0Z"/>
+    <path fill="#b78985" d="M0 96 C260 80 520 86 780 94 C1040 102 1260 84 1440 90 V120 H0Z"/>
+    ${palm(40,1,-4)}${palm(120,.8,6)}${palm(1320,1,4)}${palm(1250,.75,-5)}
+    <path fill="#4c3845" d="M0 114 C360 108 720 112 1080 110 C1260 109 1360 112 1440 112 V120 H0Z"/>`;
+})();
+function setPreview(on){
+  B.classList.toggle('preview',on);
+  setEditable(on?false:!TOUCH);
+  if(on){
+    const t=titleEl.textContent.trim()||'Untitled';
+    const when=cur.published_at?new Date(cur.published_at):new Date();
+    $('pvTitle').textContent=t; $('pvRefl').textContent=t; $('pvWhen').innerHTML=skyGlyph(when)+'First Light · '+fmtDate(when.toISOString());
+    B.classList.toggle('illum-pv',sheet.classList.contains('illum'));
+    $('pvShort').innerHTML=[...ed.children].filter(p=>p.textContent.trim()).map(p=>p.innerHTML).join('<br>');
+    { const w=cur.published_at?new Date(cur.published_at):new Date(); $('pvShortWhen').innerHTML=skyGlyph(w)+'A note at first light · '+fmtDate(w.toISOString()); }
+  }
+  scrollTo({top:0,behavior:'smooth'});
+}
+$('previewBtn').addEventListener('click',()=>setPreview(true));
+$('backBtn').addEventListener('click',()=>setPreview(false));
+function toast(p,small,em){ $('toastP').textContent=p; $('toastS').textContent=small; $('toastE').textContent=em||'';
+  const t=$('toast'); t.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>t.classList.remove('show'),3800); }
+$('publishBtn').addEventListener('click',()=>{
+  if($('publishBtn').disabled) return;
+  commit();
+  const now=new Date().toISOString();
+  if(cur.status==='published'){
+    if(!cur.revision){ refresh(); return; }
+    cur.title=cur.revision.title; cur.body=cur.revision.body; cur.revision=null; cur.updated_at=now;
+    saveFailed=!DB.put(cur); savedAt=new Date();
+    toast('Changes saved','They’re live in the oasis now.');
+  } else {
+    cur.illuminated=canBloom(cur,cur.body);           // decided once, at release (the database decides it too)
+    cur.status='published'; cur.published_at=now; cur.updated_at=now;
+    saveFailed=!DB.put(cur); savedAt=new Date();
+    toast('Released into the oasis','It rises at first light, and the others move deeper into the day.',
+      cur.illuminated?`Illuminated · tended across ${cur.tended_days.length} days`:'');
+  }
+  refresh();
+});
+$('clearBtn').addEventListener('click',newPiece);
+
+/* ---------- Phones: scroll = reading (keyboard away), double-tap = writing ---------- */
+let nudgeT;
+function showNudge(){ if(!TOUCH||editing()||B.classList.contains('preview')) return;
+  clearTimeout(nudgeT); nudgeT=setTimeout(()=>{ if(!tide.classList.contains('show')&&!editing()){ $('nudge').classList.add('show');
+    nudgeT=setTimeout(()=>$('nudge').classList.remove('show'),3600);} },900); }
+function hideNudge(){ clearTimeout(nudgeT); $('nudge').classList.remove('show'); }
+function rangeAt(x,y,el){
+  let r=null;
+  if(document.caretRangeFromPoint) r=document.caretRangeFromPoint(x,y);
+  else if(document.caretPositionFromPoint){ const cp=document.caretPositionFromPoint(x,y); if(cp){ r=document.createRange(); r.setStart(cp.offsetNode,cp.offset); r.collapse(true);} }
+  if(!r||!el.contains(r.startContainer)||(el===ed&&r.startContainer===ed)){ // tapped beside the text: nearest line's end
+    let tgt=el;
+    if(el===ed){ tgt=ed.lastElementChild; for(const c of ed.children){ if(y<=c.getBoundingClientRect().bottom){ tgt=c; break; } }
+      if(tgt&&tgt.classList.contains('orn')) tgt=tgt.nextElementSibling||tgt; }
+    r=document.createRange(); r.selectNodeContents(tgt||el); r.collapse(false);
+  }
+  return r;
+}
+function enterEdit(el,x,y){
+  const r=x!=null?rangeAt(x,y,el):(()=>{const r=document.createRange(); r.selectNodeContents(el===ed?(ed.lastElementChild||ed):el); r.collapse(false); return r;})();
+  setEditable(true);
+  el.focus({preventScroll:true});
+  const s=getSelection(); s.removeAllRanges(); s.addRange(r);
+  if(el===ed) lastRange=r.cloneRange();
+  hideNudge(); place(); setState('waking');
+}
+function exitEdit(){
+  if(!TOUCH||!B.classList.contains('editing')) return;
+  const a=document.activeElement; if(a&&a.blur) a.blur();
+  setEditable(false); place(); showNudge();
+}
+if(TOUCH){
+  setEditable(false);
+  // if the keyboard gets closed some other way, settle back into reading
+  editables.forEach(el=>el.addEventListener('blur',()=>setTimeout(()=>{
+    if(!editables.includes(document.activeElement)&&B.classList.contains('editing')){ setEditable(false); place(); showNudge(); } },150)));
+  let ts=null, lastTap=null;
+  const skip=t=>t.closest&&t.closest('.rail,.tide,.mode,.foot,.count,.chips,.nudge,.toast');
+  document.addEventListener('touchstart',e=>{
+    if(e.touches.length>1||skip(e.target)){ ts=null; return; }
+    const t=e.touches[0]; ts={x:t.clientX,y:t.clientY,moved:false};
+  },{passive:true});
+  document.addEventListener('touchmove',e=>{
+    if(!ts) return; const t=e.touches[0], dx=t.clientX-ts.x, dy=t.clientY-ts.y;
+    if(Math.hypot(dx,dy)>10) ts.moved=true;
+    // a deliberate vertical drag while writing = scrolling: put the keyboard away (not while dragging a selection)
+    if(B.classList.contains('editing') && Math.abs(dy)>16 && Math.abs(dy)>Math.abs(dx) && getSelection().isCollapsed) exitEdit();
+  },{passive:true});
+  document.addEventListener('touchend',e=>{
+    if(!ts||ts.moved||B.classList.contains('preview')||!sheet.contains(e.target)){ ts=null; return; }
+    const now=Date.now(), el=titleEl.contains(e.target)?titleEl:ed;
+    if(!B.classList.contains('editing')){
+      if(lastTap && now-lastTap.t<340 && Math.hypot(ts.x-lastTap.x,ts.y-lastTap.y)<40){
+        e.preventDefault(); enterEdit(el,ts.x,ts.y); lastTap=null;
+      } else {
+        lastTap={t:now,x:ts.x,y:ts.y};
+        if(el===ed && !e.target.closest('.orn')){ // single tap while reading: choose this line, no keyboard
+          lastRange=rangeAt(ts.x,ts.y,ed); place();
+          clearTimeout(tWake); clearTimeout(tReady); setState('waking'); tReady=setTimeout(()=>setState('ready'),350);
+        }
+      }
+    }
+    ts=null;
+  },{passive:false});
+}
+
+openPiece(firstPiece());
+setState('waking');
+showNudge();
+})();
+</script>
+</body>
+</html>

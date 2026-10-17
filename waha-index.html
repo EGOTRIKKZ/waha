@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wāḥa — Amir &amp; Simi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Marcellus&family=Marcellus+SC&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky-top:#1e2247; --sky-bot:#b47c78; --sun-c:#ffb27a;
+  --ink:#3a2a1c; --ink-soft:#6e5741;
+  --gold:#b0802b; --gold-light:#dcb766;
+  --lapis:#2b6a8a; --lapis-light:#86c0d8;
+  --sand:#f1e4c6;
+  --hand:var(--gold); --hand-light:var(--gold-light);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"Cormorant Garamond",Georgia,serif;color:var(--ink);background:#1e2247;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* ---------- Authors: each voice has its own seal & ink ---------- */
+[data-author=amir]{--hand:var(--gold);--hand-light:var(--gold-light)}
+[data-author=simi]{--hand:var(--lapis);--hand-light:var(--lapis-light)}
+
+/* ---------- Living sky ---------- */
+#sky{position:fixed;inset:0;z-index:0;background:linear-gradient(to bottom,var(--sky-top) 0%,var(--sky-bot) 100%)}
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+.star{position:absolute;border-radius:50%;background:#fff8e6;animation:twinkle var(--d) ease-in-out infinite;animation-delay:var(--dl)}
+@keyframes twinkle{0%,100%{opacity:.25}50%{opacity:1}}
+#sun{position:fixed;z-index:1;width:96px;height:96px;margin:-48px 0 0 -48px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,#fffbe9 0%,#fff1c7 38%,var(--sun-c) 70%,transparent 72%);
+  box-shadow:0 0 60px 20px color-mix(in srgb,var(--sun-c) 45%,transparent),0 0 160px 60px color-mix(in srgb,var(--sun-c) 18%,transparent)}
+#moon{position:fixed;z-index:1;width:54px;height:54px;border-radius:50%;pointer-events:none;
+  box-shadow:14px -6px 0 0 #f3e8c8;filter:drop-shadow(0 0 14px rgba(243,232,200,.55));opacity:0}
+
+/* ---------- Floating wordmark ---------- */
+.chip{position:fixed;top:16px;left:16px;z-index:20;display:flex;align-items:center;gap:.6rem;
+  padding:.45rem .95rem .45rem .8rem;border-radius:999px;text-decoration:none;color:var(--ink);
+  background:rgba(241,228,198,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(176,128,43,.35);font-family:"Marcellus SC",serif;letter-spacing:.18em;font-size:.82rem;
+  opacity:0;transform:translateY(-8px);transition:opacity .5s,transform .5s;pointer-events:none}
+.chip.show{opacity:1;transform:none;pointer-events:auto}
+.chip .ar{font-family:Amiri,serif;font-size:1.15rem;letter-spacing:0;color:var(--gold)}
+
+/* ---------- River rail ---------- */
+.river{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:20}
+.river::before{content:"";position:absolute;left:50%;top:6px;bottom:6px;width:1px;transform:translateX(-50%);
+  background:linear-gradient(to bottom,transparent,rgba(220,183,102,.75),transparent)}
+.river a{position:relative;display:block;width:14px;height:14px;margin:18px 0}
+.river a i{position:absolute;inset:3px;border-radius:50%;background:rgba(241,228,198,.55);
+  box-shadow:0 0 0 1px var(--hand);transition:all .35s}
+.river a.on i{inset:0;background:var(--hand-light);box-shadow:0 0 0 3px color-mix(in srgb,var(--hand-light) 30%,transparent),0 0 12px var(--hand-light)}
+.river a span{position:absolute;right:26px;top:50%;transform:translateY(-50%) translateX(6px);white-space:nowrap;
+  font-family:"Marcellus",serif;font-size:.85rem;letter-spacing:.04em;color:var(--ink);
+  background:rgba(241,228,198,.92);padding:.25rem .65rem;border-radius:4px;opacity:0;pointer-events:none;transition:all .3s}
+.river a span b{font-family:"Marcellus SC",serif;font-weight:400;color:var(--hand);letter-spacing:.12em;margin-left:.4rem}
+.river a:hover span,.river a:focus-visible span{opacity:1;transform:translateY(-50%)}
+
+/* ---------- Time-of-day palettes ---------- */
+[data-time]{--emb:var(--hand)}
+[data-time=predawn] {--far:#6e5b7a;--mid:#3f3557;--near:#1b1730;--wa:#6d7298;--wb:#232849;--title:#f4e1b6;--when:#d9b98e;--sand:#f1e4c6;--emb:var(--hand-light)}
+[data-time=dawn]    {--far:#d8aaa0;--mid:#b78985;--near:#4c3845;--wa:#8cc3c6;--wb:#3e8791;--title:#3a2232;--when:#7c4a4f;--sand:#f4e5cc}
+[data-time=morning] {--far:#e6c3a0;--mid:#c79f7c;--near:#4a4a34;--wa:#82d2cd;--wb:#2a8a92;--title:#2f2318;--when:#7a5530;--sand:#f4e6c8}
+[data-time=noon]    {--far:#e8cb93;--mid:#c99d5e;--near:#45502f;--wa:#69cbc9;--wb:#17808a;--title:#2c2215;--when:#7a5a2c;--sand:#f2e4c3}
+[data-time=golden]  {--far:#e0aa70;--mid:#b67c4a;--near:#3f3a26;--wa:#e6bb7e;--wb:#2f7a80;--title:#2e1f12;--when:#7a4a22;--sand:#f1dfbd}
+[data-time=dusk]    {--far:#bd6c7c;--mid:#7d405d;--near:#2c1a33;--wa:#e49d6b;--wb:#563865;--title:#fff0dc;--when:#f7c99b;--sand:#eed8b9;--emb:var(--hand-light)}
+[data-time=night]   {--far:#3b4575;--mid:#242b55;--near:#0e132f;--wa:#2c3e72;--wb:#0c1436;--title:#f3e7c9;--when:#cdbd8d;--sand:#e6d9bf;--emb:var(--hand-light)}
+[data-time=midnight]{--far:#323b6b;--mid:#1e2450;--near:#0b0f2a;--wa:#25356a;--wb:#0a1131;--title:#f3e7c9;--when:#c6b585;--sand:#e4d7bc;--emb:var(--hand-light)}
+[data-time=deep]    {--far:#2a3260;--mid:#1a2046;--near:#090c24;--wa:#1f2c5a;--wb:#070c26;--title:#f3e7c9;--when:#bfae80;--sand:#e3d5ba;--emb:var(--hand-light)}
+
+section,header,footer{position:relative;z-index:2}
+
+/* ---------- Threshold ---------- */
+.threshold{position:relative;min-height:88vh;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
+  padding:0 16px clamp(1rem,3vh,2rem);text-align:center}
+.horizon{position:absolute;left:0;right:0;bottom:0;height:clamp(150px,32vh,300px);z-index:0}
+.horizon svg{width:100%;height:100%;display:block}
+.heading{position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center}
+.when{font-family:"Marcellus SC",serif;color:var(--when);font-size:clamp(.92rem,1.6vw,1.08rem);letter-spacing:.32em;
+  margin-bottom:1rem;display:flex;align-items:center;justify-content:center;gap:.9rem}
+.when::before,.when::after{content:"";width:clamp(24px,5vw,56px);height:1px;background:currentColor;opacity:.6}
+.title,.reflection{font-family:"Marcellus",serif;font-weight:400;line-height:1.04;max-width:13ch;
+  font-size:clamp(2.5rem,7vw,5.2rem);letter-spacing:.01em;color:var(--title)}
+
+/* The cartouche — the writer's name, sealed the way Egypt sealed names */
+.cartouche{position:relative;display:inline-flex;align-items:center;gap:.65rem;margin:0 0 1.15rem;
+  padding:.42rem 1.25rem .42rem .85rem;border-radius:999px;color:var(--title);
+  border:1.5px solid var(--emb);
+  background:color-mix(in srgb,var(--hand) 14%,transparent);
+  box-shadow:inset 0 0 0 4px transparent,inset 0 0 0 5px color-mix(in srgb,var(--emb) 40%,transparent)}
+.cartouche::after{content:"";position:absolute;right:-10px;top:16%;bottom:16%;width:2.5px;border-radius:2px;background:var(--emb)}
+.cartouche svg{width:24px;height:24px;color:var(--emb);fill:var(--emb)}
+.cartouche .n{font-family:"Marcellus SC",serif;letter-spacing:.24em;font-size:clamp(1rem,1.9vw,1.15rem)}
+.cartouche .a{font-family:Amiri,serif;font-size:1.3rem;line-height:1;color:var(--emb)}
+
+.heading{opacity:0;transform:translateY(34px);transition:opacity 1.4s ease,transform 1.6s cubic-bezier(.2,.7,.2,1)}
+.heading.in{opacity:1;transform:none}
+
+/* ---------- Pool ---------- */
+.pool{position:relative;z-index:2;height:clamp(120px,18vh,180px);overflow:hidden;background:linear-gradient(to bottom,var(--wa),var(--wb))}
+.pool::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(to bottom,transparent 0 9px,rgba(255,255,255,.13) 9px 10px,transparent 10px 23px);
+  -webkit-mask-image:linear-gradient(to bottom,#000,transparent 75%);mask-image:linear-gradient(to bottom,#000,transparent 75%);
+  animation:drift 7s linear infinite}
+@keyframes drift{to{background-position:0 23px}}
+.reflection{position:relative;margin:2px auto 0;padding:0 16px;text-align:center;transform:scaleY(-1);opacity:.42;filter:url(#ripple);
+  -webkit-mask-image:linear-gradient(to top,#000 0%,transparent 80%);mask-image:linear-gradient(to top,#000 0%,transparent 80%)}
+.reeds{position:absolute;bottom:0;width:90px;height:110px;z-index:1}
+.reeds.l{left:-6px}.reeds.r{right:-6px;transform:scaleX(-1)}
+.reeds path{fill:none;stroke:var(--near);stroke-width:2.2;stroke-linecap:round}
+
+/* ---------- Ground ---------- */
+.ground{position:relative;z-index:3;margin-top:-74px}
+.ground svg.edge{display:block;width:100%;height:90px}
+.ground svg.edge path{fill:var(--sand)}
+.ground svg.edge.bottom{height:80px;margin-top:-1px}
+.page{position:relative;background:var(--sand);padding:clamp(1.5rem,5vw,3.5rem) 16px clamp(2.5rem,6vw,4.5rem);margin-top:-1px}
+.page::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.22;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .38  0 0 0 0 .27  0 0 0 0 .13  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>")}
+article{position:relative;max-width:35rem;margin:0 auto;font-size:clamp(1.18rem,2.1vw,1.34rem);line-height:1.78}
+article p{margin:0 0 1.25em;hyphens:auto;text-wrap:pretty}
+article p.open::first-letter{font-family:"Marcellus",serif;float:left;font-size:4.4em;line-height:.82;padding:.06em .12em 0 0;color:var(--hand)}
+article blockquote{margin:2.2em 0;padding:1.3em 0;text-align:center;font-style:italic;font-size:1.32em;line-height:1.45;
+  color:color-mix(in srgb,var(--hand) 55%,#3a2a1c);
+  border-top:1px solid color-mix(in srgb,var(--hand) 45%,transparent);border-bottom:1px solid color-mix(in srgb,var(--hand) 45%,transparent);position:relative}
+article blockquote::before,article blockquote::after{content:"";position:absolute;left:50%;width:7px;height:7px;background:var(--hand);transform:translate(-50%,-50%) rotate(45deg)}
+article blockquote::before{top:0}article blockquote::after{top:100%}
+.orn{display:flex;align-items:center;justify-content:center;gap:1rem;margin:2.2em 0;color:var(--hand)}
+.orn::before,.orn::after{content:"";height:1px;width:clamp(40px,12vw,90px);background:linear-gradient(to right,transparent,currentColor)}
+.orn::after{background:linear-gradient(to left,transparent,currentColor)}
+.orn svg{width:40px;height:10px;fill:currentColor}
+
+/* Signature — the piece closes with the writer's hand */
+.sig{display:flex;flex-direction:column;align-items:center;gap:.35rem;margin-top:2.6em;color:var(--hand)}
+.sig svg{width:40px;height:40px;fill:currentColor;color:currentColor}
+.sig .n{font-family:"Marcellus SC",serif;letter-spacing:.3em;font-size:1rem;margin-left:.3em}
+.sig .a{font-family:Amiri,serif;font-size:1.35rem;line-height:1;opacity:.85}
+
+.page article > *{opacity:0;transform:translateY(14px);transition:opacity 1s ease,transform 1s ease}
+.page article > .in{opacity:1;transform:none}
+
+/* ---------- Hero ---------- */
+.hero .threshold{min-height:100vh;min-height:100svh}
+.hero .heading{margin-bottom:clamp(1rem,4vh,3rem)}
+.hero .ar{font-family:Amiri,serif;font-weight:700;font-size:clamp(3rem,9vw,6.5rem);line-height:1;color:var(--gold-light);text-shadow:0 0 40px rgba(220,183,102,.35)}
+.wordmark{font-family:"Marcellus SC",serif;font-weight:400;font-size:clamp(1.6rem,4.2vw,2.6rem);letter-spacing:.55em;margin:.5rem 0 .7rem .55em;color:var(--title)}
+.byline{display:flex;align-items:center;justify-content:center;gap:.7rem;flex-wrap:wrap;font-style:italic;font-size:clamp(1.15rem,2.4vw,1.45rem);color:var(--when)}
+.byline .who{display:inline-flex;align-items:center;gap:.4rem;font-style:normal;font-family:"Marcellus SC",serif;letter-spacing:.2em;font-size:.82em;color:var(--title)}
+.byline svg{width:20px;height:20px}
+.byline .amir svg{fill:var(--gold-light);color:var(--gold-light)}
+.byline .simi svg{fill:var(--lapis-light);color:var(--lapis-light)}
+.hero .reflection{font-family:Amiri,serif;font-weight:700;font-size:clamp(3rem,9vw,6.5rem);color:var(--gold-light);opacity:.35;max-width:none}
+.epigraph{max-width:31rem;margin:0 auto;text-align:center;font-style:italic;font-size:clamp(1.2rem,2.3vw,1.4rem);line-height:1.6;color:var(--ink-soft)}
+.epigraph em{font-style:normal;font-family:"Marcellus SC",serif;letter-spacing:.12em;font-size:.82em}
+.epigraph .g{color:var(--gold)}.epigraph .l{color:var(--lapis)}
+.cue{display:flex;flex-direction:column;align-items:center;gap:.7rem;margin-top:2rem;font-family:"Marcellus SC",serif;letter-spacing:.3em;font-size:.85rem;color:var(--gold);text-decoration:none}
+.cue i{width:1px;height:46px;background:linear-gradient(var(--gold),transparent);animation:cue 2.4s ease-in-out infinite;transform-origin:top}
+@keyframes cue{0%{transform:scaleY(0);opacity:1}70%{transform:scaleY(1);opacity:1}100%{transform:scaleY(1);opacity:0}}
+
+/* ---------- Far shore ---------- */
+.end .page{text-align:center;padding-bottom:3rem}
+.end .page p{font-style:italic;font-size:1.3rem;color:var(--ink-soft);max-width:28rem;margin:0 auto 1.6rem;line-height:1.6}
+.return{display:inline-flex;align-items:center;gap:.7rem;font-family:"Marcellus SC",serif;letter-spacing:.24em;font-size:.9rem;color:var(--ink);text-decoration:none;padding:.85rem 1.6rem;border:1px solid var(--gold);border-radius:999px;transition:all .3s}
+.return:hover{background:var(--gold);color:var(--sand)}
+.colophon{margin-top:2.6rem;font-family:"Marcellus SC",serif;letter-spacing:.2em;font-size:.78rem;color:var(--ink-soft)}
+
+/* ---------- The writers' secret: hold the wordmark ---------- */
+.hold{position:relative;display:inline-block;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;cursor:default;transition:text-shadow .4s}
+.hold::after{content:"";position:absolute;left:50%;bottom:-6px;height:2px;border-radius:2px;width:calc(var(--p,0)*100%);transform:translateX(-50%);
+  background:var(--gold-light);box-shadow:0 0 10px var(--gold-light);opacity:0;transition:opacity .3s}
+.hold.holding::after{opacity:1}
+.hold.holding{text-shadow:0 0 28px rgba(220,183,102,.75)}
+
+.gate{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:16px;background:rgba(14,18,48,.5);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .5s}
+.gate.open{opacity:1;pointer-events:auto}
+.gate .card{position:relative;width:min(23rem,100%);background:var(--sand);border-radius:22px;padding:2.1rem 1.5rem 1.5rem;text-align:center;
+  box-shadow:0 30px 80px rgba(0,0,0,.35),inset 0 0 0 1px rgba(176,128,43,.35),inset 0 0 0 6px var(--sand),inset 0 0 0 7px rgba(176,128,43,.2);
+  transform:translateY(18px) scale(.98);transition:transform .55s cubic-bezier(.2,.7,.2,1)}
+.gate.open .card{transform:none}
+.gate .ar{font-family:Amiri,serif;font-weight:700;font-size:2.3rem;color:var(--gold);line-height:1}
+.gate h3{font-family:"Marcellus",serif;font-weight:400;font-size:1.6rem;margin:.4rem 0 0}
+.gate .x{position:absolute;top:10px;right:12px;border:none;background:none;font-size:1.6rem;color:var(--ink-soft);cursor:pointer;padding:.2rem .5rem}
+.seals{display:flex;gap:12px;margin:1.3rem 0 1rem}
+.seal{flex:1;display:flex;flex-direction:column;align-items:center;gap:.4rem;padding:1rem .5rem;border-radius:16px;cursor:pointer;color:var(--ink);
+  background:transparent;border:1.5px solid color-mix(in srgb,var(--c) 35%,transparent);font-family:"Marcellus SC",serif;letter-spacing:.2em;font-size:.9rem;transition:all .3s}
+.seal svg{width:40px;height:40px;fill:var(--c);color:var(--c)}
+.seal.on{background:color-mix(in srgb,var(--c) 14%,transparent);border-color:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 18%,transparent)}
+.key{width:100%;padding:.85rem 1rem;border-radius:12px;border:1px solid rgba(176,128,43,.4);background:rgba(255,250,238,.75);
+  font:inherit;font-size:1.15rem;text-align:center;letter-spacing:.25em;color:var(--ink);outline:none}
+.key:focus{border-color:var(--hand)}
+.err{min-height:1.3em;font-style:italic;color:#a4483a;font-size:1rem;margin:.4rem 0 0}
+.enter{width:100%;margin-top:.5rem;padding:.95rem;border:none;border-radius:999px;background:var(--hand);color:#fff8ea;cursor:pointer;
+  font-family:"Marcellus SC",serif;letter-spacing:.22em;font-size:.92rem}
+.soft{margin-top:.9rem;border:none;background:none;font:inherit;font-style:italic;font-size:1.05rem;color:var(--ink-soft);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.gate .note{margin-top:.9rem;font-style:italic;font-size:.92rem;color:var(--ink-soft)}
+.gate .wb{font-style:italic;color:var(--ink-soft);font-size:1.1rem;margin:.3rem 0 1.2rem}
+
+.quill{position:fixed;left:16px;bottom:16px;z-index:25;display:none;align-items:center;gap:.5rem;padding:.5rem 1.05rem .5rem .6rem;border-radius:999px;
+  background:rgba(241,228,198,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);text-decoration:none;color:var(--ink);
+  box-shadow:inset 0 0 0 1.5px var(--hand),0 8px 22px rgba(0,0,0,.18);font-family:"Marcellus SC",serif;letter-spacing:.18em;font-size:.84rem}
+.quill svg{width:22px;height:22px;fill:var(--hand);color:var(--hand)}
+body.signed .quill{display:flex}
+
+/* ---------- The hour it was written: a tiny sky in the date line ---------- */
+.skyg{width:30px;height:18px;vertical-align:-3px;color:inherit;flex:none}
+.sig .at{font-family:"Cormorant Garamond",serif;font-style:italic;letter-spacing:0;font-size:.98rem;opacity:.8;margin-top:.15rem;color:var(--ink-soft)}
+
+/* ---------- Illuminated pieces: tended across many days, framed in gold thread ---------- */
+.illum-tag{display:flex;align-items:center;justify-content:center;gap:.75rem;font-family:"Marcellus SC",serif;letter-spacing:.42em;
+  font-size:clamp(.8rem,1.5vw,.95rem);color:var(--when);margin:0 0 1rem .42em}
+.illum-tag::before,.illum-tag::after{content:"";width:8px;height:8px;background:#c9a14a;transform:rotate(45deg);box-shadow:0 0 10px rgba(201,161,74,.6)}
+.illuminated .title{text-shadow:0 1px 0 rgba(255,240,200,.35)}
+.illuminated article{max-width:38rem;border:40px solid transparent;border-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><rect x='4' y='4' width='112' height='112' fill='none' stroke='%23c9a14a' stroke-width='1.4' stroke-dasharray='3.5 2.5'/><rect x='14' y='14' width='92' height='92' fill='none' stroke='%232b3466' stroke-width='10'/><rect x='8' y='8' width='104' height='104' fill='none' stroke='%23c9a14a' stroke-width='.9'/><rect x='20' y='20' width='80' height='80' fill='none' stroke='%23c9a14a' stroke-width='.9'/><rect x='27' y='27' width='66' height='66' fill='none' stroke='%23c9a14a' stroke-width='1' stroke-dasharray='3 2.5'/><path d='M45 10.4L48.6 14L45 17.6L41.4 14Z' fill='%23e2bd62'/><path d='M45 102.4L48.6 106L45 109.6L41.4 106Z' fill='%23e2bd62'/><path d='M14 41.4L17.6 45L14 48.6L10.4 45Z' fill='%23e2bd62'/><path d='M106 41.4L109.6 45L106 48.6L102.4 45Z' fill='%23e2bd62'/><path d='M65 10.4L68.6 14L65 17.6L61.4 14Z' fill='%23e2bd62'/><path d='M65 102.4L68.6 106L65 109.6L61.4 106Z' fill='%23e2bd62'/><path d='M14 61.4L17.6 65L14 68.6L10.4 65Z' fill='%23e2bd62'/><path d='M106 61.4L109.6 65L106 68.6L102.4 65Z' fill='%23e2bd62'/><circle cx='55' cy='14' r='1.1' fill='%23e2bd62'/><circle cx='55' cy='106' r='1.1' fill='%23e2bd62'/><circle cx='14' cy='55' r='1.1' fill='%23e2bd62'/><circle cx='106' cy='55' r='1.1' fill='%23e2bd62'/><circle cx='75' cy='14' r='1.1' fill='%23e2bd62'/><circle cx='75' cy='106' r='1.1' fill='%23e2bd62'/><circle cx='14' cy='75' r='1.1' fill='%23e2bd62'/><circle cx='106' cy='75' r='1.1' fill='%23e2bd62'/><circle cx='14' cy='14' r='9.5' fill='%232b3466' stroke='%23c9a14a' stroke-width='1.2'/><rect x='10' y='10' width='8' height='8' fill='%23e2bd62'/><rect x='10' y='10' width='8' height='8' fill='%23e2bd62' transform='rotate(45 14 14)'/><circle cx='14' cy='14' r='1.8' fill='%232b3466'/><circle cx='106' cy='14' r='9.5' fill='%232b3466' stroke='%23c9a14a' stroke-width='1.2'/><rect x='102' y='10' width='8' height='8' fill='%23e2bd62'/><rect x='102' y='10' width='8' height='8' fill='%23e2bd62' transform='rotate(45 106 14)'/><circle cx='106' cy='14' r='1.8' fill='%232b3466'/><circle cx='14' cy='106' r='9.5' fill='%232b3466' stroke='%23c9a14a' stroke-width='1.2'/><rect x='10' y='102' width='8' height='8' fill='%23e2bd62'/><rect x='10' y='102' width='8' height='8' fill='%23e2bd62' transform='rotate(45 14 106)'/><circle cx='14' cy='106' r='1.8' fill='%232b3466'/><circle cx='106' cy='106' r='9.5' fill='%232b3466' stroke='%23c9a14a' stroke-width='1.2'/><rect x='102' y='102' width='8' height='8' fill='%23e2bd62'/><rect x='102' y='102' width='8' height='8' fill='%23e2bd62' transform='rotate(45 106 106)'/><circle cx='106' cy='106' r='1.8' fill='%232b3466'/></svg>") 40 round;padding:2.2rem 1.8rem 1.8rem}
+.illuminated article p.open::first-letter{color:#e2bd62;background:#2b3466;border:3px double #c9a14a;border-radius:4px;
+  padding:.1em .16em .04em;margin:.08em .16em 0 0;font-size:3.9em;line-height:.92}
+.tended{display:flex;flex-direction:column;align-items:center;gap:.55rem;margin-top:1.6rem;font-style:italic;color:var(--ink-soft);font-size:1.02rem;text-align:center}
+.stitches{display:flex;flex-wrap:wrap;justify-content:center;gap:5px 4px;max-width:15rem}
+.stitches i{width:8px;height:2px;border-radius:1px;background:#c9a14a}
+
+@media (max-width:720px){.river{display:none}.threshold{min-height:80vh}
+  .illuminated article{border-width:26px;padding:1.2rem .7rem 1rem}}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .heading,.page article>*{opacity:1;transform:none;transition:none}
+  .star,.pool::after,.cue i{animation:none}
+  .reflection{filter:none}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="ripple" x="-10%" y="-30%" width="120%" height="160%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.011 0.085" numOctaves="2" seed="4" result="n">
+        <animate attributeName="baseFrequency" dur="10s" values="0.011 0.085;0.015 0.11;0.011 0.085" repeatCount="indefinite"/>
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="11" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <!-- Amir's seal: the palm -->
+    <symbol id="palm" viewBox="0 0 140 220">
+      <path d="M68 220 C70 170 63 120 72 70 L77 70 C71 120 78 170 77 220 Z"/>
+      <path d="M74 66 C90 46 116 40 138 54 C116 50 96 54 76 70 Z"/>
+      <path d="M74 66 C58 46 32 40 4 52 C30 50 52 56 72 70 Z"/>
+      <path d="M74 64 C84 40 104 24 126 22 C104 32 90 46 78 68 Z"/>
+      <path d="M74 64 C64 40 44 24 20 22 C44 32 58 46 70 68 Z"/>
+      <path d="M74 66 C96 64 118 76 132 100 C114 82 96 74 76 70 Z"/>
+      <path d="M74 66 C52 64 28 76 12 102 C32 82 52 74 72 70 Z"/>
+      <path d="M74 62 C76 40 72 22 64 4 C80 22 82 42 78 64 Z"/>
+      <ellipse cx="74" cy="70" rx="7" ry="5"/>
+    </symbol>
+    <symbol id="seal-amir" viewBox="0 0 140 220"><use href="#palm"/></symbol>
+    <!-- Simi's seal: the lotus -->
+    <symbol id="seal-simi" viewBox="0 0 68 48">
+      <path d="M34 2 C41 14 41 30 34 42 C27 30 27 14 34 2 Z"/>
+      <path opacity=".85" d="M34 42 C26 32 18 22 6 18 C10 30 20 40 34 42 Z"/>
+      <path opacity=".85" d="M34 42 C42 32 50 22 62 18 C58 30 48 40 34 42 Z"/>
+      <path opacity=".6" d="M34 42 C22 38 10 36 0 38 C10 44 22 46 34 42 Z"/>
+      <path opacity=".6" d="M34 42 C46 38 58 36 68 38 C58 44 46 46 34 42 Z"/>
+    </symbol>
+    <symbol id="orn" viewBox="0 0 40 10">
+      <path d="M5 1 L9 5 L5 9 L1 5Z"/><path d="M20 0 L25 5 L20 10 L15 5Z"/><path d="M35 1 L39 5 L35 9 L31 5Z"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="sky"></div>
+<div id="stars"></div>
+<div id="sun"></div>
+<div id="moon"></div>
+
+<a class="chip" href="#top" aria-label="Back to the beginning"><span class="ar hold">واحة</span>Wāḥa</a>
+<nav class="river" aria-label="Pieces"></nav>
+
+<!-- Only appears once a writer has signed in on this device -->
+<a class="quill" id="quill" href="waha-editor.html" data-author="amir"><svg><use id="quillSeal" href="#seal-amir"/></svg>Write</a>
+
+<!-- The writers' entrance (press and hold the Arabic wordmark) -->
+<div class="gate" id="gate" role="dialog" aria-modal="true" aria-label="Writers' entrance">
+  <div class="card">
+    <button class="x" id="gateX" aria-label="Close">×</button>
+    <div id="paneIn">
+      <div class="ar" lang="ar">أهلاً</div>
+      <h3>Who's writing today?</h3>
+      <div class="seals">
+        <button class="seal on" data-w="amir" style="--c:var(--gold)"><svg><use href="#seal-amir"/></svg>Amir</button>
+        <button class="seal" data-w="simi" style="--c:var(--lapis)"><svg><use href="#seal-simi"/></svg>Simi</button>
+      </div>
+      <input class="key" id="key" type="password" placeholder="Your key" autocomplete="current-password">
+      <p class="err" id="err"></p>
+      <button class="enter" id="enter">Step inside</button>
+      <p class="note">Demo: any key of four or more characters opens it.</p>
+    </div>
+    <div id="paneOut" hidden>
+      <div class="ar" lang="ar">أهلاً</div>
+      <h3 id="wbName">Welcome back</h3>
+      <p class="wb">The page is waiting for you.</p>
+      <button class="enter" id="goWrite">Go write</button>
+      <button class="soft" id="signOut">Sign out on this device</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="top" data-time="predawn" data-title="The edge of the oasis">
+  <div class="threshold">
+    <div class="horizon" data-palms="both"></div>
+    <div class="heading">
+      <div><span class="ar hold" lang="ar">واحة</span></div>
+      <h1 class="wordmark">Wāḥa</h1>
+      <p class="byline">The writings of
+        <span class="who amir"><svg><use href="#seal-amir"/></svg>Amir</span> &amp;
+        <span class="who simi"><svg><use href="#seal-simi"/></svg>Simi</span></p>
+    </div>
+  </div>
+  <div class="pool">
+    <div class="reflection" aria-hidden="true">واحة</div>
+    <svg class="reeds l" viewBox="0 0 90 110"><path d="M10 110 Q14 60 8 10 M22 110 Q30 64 40 22 M32 110 Q30 70 20 34 M44 110 Q52 76 64 48 M56 110 Q58 86 52 66"/></svg>
+    <svg class="reeds r" viewBox="0 0 90 110"><path d="M10 110 Q14 60 8 10 M22 110 Q30 64 40 22 M32 110 Q30 70 20 34 M44 110 Q52 76 64 48"/></svg>
+  </div>
+  <div class="ground">
+    <svg class="edge" viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0 90 V52 C220 18 420 26 640 46 C860 66 1080 22 1440 40 V90 Z"/></svg>
+    <div class="page">
+      <p class="epigraph">Two voices, one oasis. Pieces sealed with the palm in <em class="g">gold</em> are Amir's; those sealed with the lotus in <em class="l">lapis</em> are Simi's. The newest rises with first light. The older ones wait further on, deeper into the day, until the stars.</p>
+      <a class="cue" href="#s1">Walk toward the water<i></i></a>
+    </div>
+    <svg class="edge bottom" viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0 0 H1440 V38 C1180 80 960 18 720 50 C480 82 250 26 0 62 Z"/></svg>
+  </div>
+</header>
+
+<!-- ============ 1 · Amir · dawn ============ -->
+<section class="station" id="s1" data-written="2026-10-14T05:42" data-time="dawn" data-author="amir" data-title="The Well Remembers">
+  <div class="threshold">
+    <div class="horizon" data-palms="left"></div>
+    <div class="heading">
+      <div class="cartouche"><svg><use href="#seal-amir"/></svg><span class="n">Amir</span><span class="a" lang="ar">أمير</span></div>
+      <p class="when">First Light · October 14</p>
+      <h2 class="title">The Well Remembers</h2>
+    </div>
+  </div>
+  <div class="pool"><div class="reflection" aria-hidden="true">The Well Remembers</div>
+    <svg class="reeds l" viewBox="0 0 90 110"><path d="M10 110 Q14 60 8 10 M22 110 Q30 64 40 22 M32 110 Q30 70 20 34 M44 110 Q52 76 64 48"/></svg></div>
+  <div class="ground">
+    <svg class="edge" viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0 90 V44 C260 70 480 20 720 38 C960 56 1200 24 1440 48 V90 Z"/></svg>
+    <div class="page"><article>
+      <p class="open">My grandmother used to say that a well is the only thing in the desert with a memory. Everything else forgets. The wind forgets which way it came. The dunes forget their own shapes by morning. But the well remembers every rope ever lowered into it, every face that ever leaned over its edge looking for a reflection.</p>
+      <p>I went back this year. The village has electricity now, and a pharmacy, and a boy who sells phone credit from a folding table under the acacia. But the well is still there, ringed in stone worn smooth as soap by a hundred years of hands.</p>
+      <blockquote>We do not drink water. We drink the patience of the earth.</blockquote>
+      <p>I lowered the bucket the way she taught me — slowly, so the water has time to decide it wants to come up. When it broke the surface I swear I heard it: not a splash, but something closer to a name.</p>
+      <div class="orn"><svg><use href="#orn"/></svg></div>
+      <p>I am writing this at dawn, before the heat arrives, because this is the hour the oasis tells the truth. The palms are still blue. The water hasn't decided what color to be yet. And somewhere underneath all of it, the well is keeping track.</p>
+      <div class="sig"><svg><use href="#seal-amir"/></svg><span class="n">Amir</span><span class="a" lang="ar">أمير</span></div>
+    </article></div>
+    <svg class="edge bottom" viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0 0 H1440 V56 C1200 24 980 74 720 48 C460 22 240 70 0 40 Z"/></svg>
+  </div>
+</section>
+
+<!-- ============ 2 · Simi · morning ============ -->
+<section class="station" id="s2" data-written="2026-10-12T07:15" data-time="morning" data-author="simi" data-title="Bread Before the Heat">
+  <div class="threshold">
+    <div class="horizon" data-palms="right"></div>
+    <div class="heading">
+      <div class="cartouche"><svg><use href="#seal-simi"/></svg><span class="n">Simi</span><span class="a" lang="ar">سيمي</span></div>
+      <p class="when">Morning · October 12</p>
+      <h2 class="title">Bread Before the Heat</h2>
+    </div>
+  </div>
+  <div class="pool"><div class="reflection" aria-hidden="true">Bread Before the Heat</div>
+    <svg class="reeds r" viewBox="0 0 90 110"><path d="M10 110 Q14 60 8 10 M22 110 Q30 64 40 22 M32 110 Q30 70 20 34"/></svg></div>
+  <div class="ground">
+    <svg class="edge" viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0 90 V30 C240 56 520 40 760 52 C1000 64 1240 28 1440 40 V90 Z"/></svg>
+    <div class="page"><article>
+      <p class="open">The bakery on our lane opens before the call to prayer has finished echoing. By six there is a line — women in housecoats, a soldier home on leave, two schoolgirls sharing one coin between them and arguing about how to spend it.</p>
+      <p>I go for the round loaves that come out puffed like a held breath and collapse the moment you tear them. Umm Karim, who runs the oven, has never once given me correct change. She rounds up or down depending, I think, on her opinion of my day.</p>
+      <blockquote>Bread is a promise you keep every morning, whether anyone thanks you or not.</blockquote>
+      <p>She said it while sliding another tray into the fire, not looking at me, the way people say true things when their hands are busy.</p>
+      <p>I walked home with the loaf warm against my ribs and thought about all the promises I keep without noticing. Most of them are small. Most of them are bread.</p>
+      <div class="sig"><svg><use href="#seal-simi"/></svg><span class="n">Simi</span><span class="a" lang="ar">سيمي</span></div>
+    </article></div>
+    <svg class="edge bottom" viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0 0 H1440 V48 C1180 20 940 72 700 50 C460 28 230 70 0 46 Z"/></svg>
+  </div>
+</section>
+
+<!-- ============ 3 · Amir · high sun · ILLUMINATED (tended across many days) ============ -->
+<section class="station illuminated" id="s3" data-time="noon" data-author="amir" data-title="The Long Water"
+  data-written="2026-10-10T23:12" data-tended="31" data-span="September 2 – October 10">
+  <div class="threshold">
+    <div class="horizon" data-palms="left"></div>
+    <div class="heading">
+      <p class="illum-tag">Illuminated</p>
+      <div class="cartouche"><svg><use href="#seal-amir"/></svg><span class="n">Amir</span><span class="a" lang="ar">أمير</span></div>
+      <p class="when">High Sun · October 10</p>
+      <h2 class="title">The Long Water</h2>
+    </div>
+  </div>
+  <div class="pool"><div class="reflection" aria-hidden="true">The Long Water</div>
+    <svg class="reeds l" viewBox="0 0 90 110"><path d="M10 110 Q14 60 8 10 M22 110 Q30 64 40 22 M32 110 Q30 70 20 34 M44 110 Q52 76 64 48"/></svg>
+    <svg class="reeds r" viewBox="0 0 90 110"><path d="M10 110 Q14 60 8 10 M22 110 Q30 64 40 22 M32 110 Q30 70 20 34"/></svg></div>
+  <div class="ground">
+    <svg class="edge" viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0 90 V36 C300 20 520 62 780 46 C1040 30 1240 58 1440 34 V90 Z"/></svg>
+    <div class="page"><article>
+      <p class="open">There is a story they tell in the oasis about a man who tried to follow the spring back to where it began. He was not a scholar or a holy man. He was a date farmer with a bad knee and a stubborn heart, and one summer, when the water in his channel ran thinner than it had in forty years, he decided that he was owed an explanation.</p>
+      <p>He started at his own field, where the water arrived each morning through a ditch no wider than his forearm. He followed the ditch to the main channel, and the main channel to the pool beneath the old palms, where the women washed clothes and the boys dared each other to touch the bottom. From there the water came up out of the ground itself, cold and clear, from a crack in the limestone no one had ever thought to question.</p>
+      <p>So he questioned it. He knelt at the edge of the spring and put his ear to the stone, the way his father used to listen to the chest of a sick goat. He heard something — a hum, a movement, a sound like a crowd very far away — and he understood, the way you understand things at the end of a long day, that the water was not born here. It was only <em>arriving</em>.</p>
+      <div class="orn"><svg><use href="#orn"/></svg></div>
+      <p>I first heard this story from my grandmother, and I have heard it a dozen times since, from a dozen people, and no two of them agree on how it ends. That is part of why I have been writing it down. Not to settle it. To keep all the endings in one place.</p>
+      <p>In my grandmother's version, the farmer walks west. He takes a skin of water, a bag of dates, and a walking stick cut from a tamarisk, and he walks into the open desert with nothing but the hum in his ears to guide him. Every night he lies down and presses his ear to the sand, and every night the sound is a little closer, a little louder, until on the seventh night it is so loud he cannot sleep.</p>
+      <p>On the eighth morning he comes to a place where the sand is darker than it should be, and cool to the touch, and he digs with his hands until his fingers bleed. A foot down, the sand is damp. Two feet down, it is wet. Three feet down, he finds water moving — not standing, <em>moving</em> — a river running in the dark beneath the desert, older than any city, wider than any canal.</p>
+      <blockquote>The spring is not the beginning. It is only the place where the long water finally lets us see it.</blockquote>
+      <p>My grandmother always paused there, as if she were listening for the hum herself. Then she would say that the farmer sat beside his little hole for a whole day, just watching the water pass, and that when he finally walked home, he never complained about the channel again. Not because it ran fuller. Because he knew where it came from, and how far it had travelled, and how little it owed him.</p>
+      <div class="orn"><svg><use href="#orn"/></svg></div>
+      <p>The version I heard from Hassan, who tends the palms, is less forgiving. In his telling the farmer finds the underground river and decides it should be his. He digs a trench to bring it straight to his own field, bypassing the spring, bypassing the pool, bypassing everyone. For one season he has more water than he knows what to do with. His dates are the fattest in the valley. He sells them in the city and comes home with silk for his wife.</p>
+      <p>And then the spring goes quiet. The pool shrinks to a puddle. The women stop coming to wash, and the boys stop daring each other, and the old palms begin to yellow at the tips. The whole oasis, Hassan says, held its breath, waiting to see what the farmer would do.</p>
+      <p>“What did he do?” I asked.</p>
+      <p>Hassan shrugged. “What do you think? He filled in the trench. He was greedy, not stupid.” Then he laughed so hard he had to sit down, and I never found out if he was joking.</p>
+      <div class="orn"><svg><use href="#orn"/></svg></div>
+      <p>Simi's mother tells it differently again. In her version the farmer never finds the river at all. He walks for seven days, and on the eighth morning there is nothing but sand in every direction, and the hum has gone silent. He has no water left. He lies down to die.</p>
+      <p>But the night is cold, and in the morning there is dew on his cloak, a few drops caught in the wool, and he licks them off and finds he can stand. The next morning, the same. He walks home on dew, a mouthful at a time, and it takes him a month, and by the time he arrives his family has already mourned him and given away his shoes.</p>
+      <p>“So what did he learn?” I asked her.</p>
+      <p>She looked at me as though I were a little slow. “That water does not come from one place,” she said. “It comes from everywhere, a little at a time. You only notice it when you are thirsty enough.”</p>
+      <div class="orn"><svg><use href="#orn"/></svg></div>
+      <p>I have been working on this piece for a long time now. Longer than anything else I have written here. I started it in the heat at the end of summer, and I am finishing it now that the evenings have turned cool enough to sit outside. Some days I added a page. Some days I added a sentence, and then took it out again.</p>
+      <p>I think I kept returning to it because I recognized myself in that farmer — not the brave one, not the greedy one, but the one who kneels at the edge of something he has taken for granted his whole life and suddenly needs to know where it comes from. The words I write here arrive each morning like water in a ditch. I never asked where from.</p>
+      <blockquote>Everything that reaches you has travelled a long way to get here.</blockquote>
+      <p>Maybe that is the real ending, the one under all the others. The spring, the dew, the river in the dark — they are all the same water, at different moments in its journey. My grandmother's farmer, Hassan's farmer, Simi's mother's farmer: the same man, at different moments in his.</p>
+      <p>Tonight I went down to the pool after the lanterns were lit. The water was very still. I knelt at the edge, a little embarrassed, and put my ear close to the stone.</p>
+      <p>I am not going to tell you what I heard. But I sat there a long time, and when I stood up my knees were wet, and I did not mind at all.</p>
+      <div class="sig"><svg><use href="#seal-amir"/></svg><span class="n">Amir</span><span class="a" lang="ar">أمير</span></div>
+      <div class="tended"><span class="stitches"></span><span class="tended-txt"></span></div>
+    </article></div>
+    <svg class="edge bottom" viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0 0 H1440 V44 C1160 78 900 30 640 58 C400 84 200 34 0 52 Z"/></svg>
+  </div>
+</section>
+
+<!-- ============ 4 · Simi · golden hour ============ -->
+<section class="station" id="s4" data-written="2026-10-09T16:30" data-time="golden" data-author="simi" data-title="The Color of Shade">
+  <div class="threshold">
+    <div class="horizon" data-palms="both"></div>
+    <div class="heading">
+      <div class="cartouche"><svg><use href="#seal-simi"/></svg><span class="n">Simi</span><span class="a" lang="ar">سيمي</span></div>
+      <p class="when">Late Afternoon · October 9</p>
+      <h2 class="title">The Color of Shade</h2>
+    </div>
+  </div>
+  <div class="pool"><div class="reflection" aria-hidden="true">The Color of Shade</div>
+    <svg class="reeds l" viewBox="0 0 90 110"><path d="M10 110 Q14 60 8 10 M22 110 Q30 64 40 22 M32 110 Q30 70 20 34"/></svg>
+    <svg class="reeds r" viewBox="0 0 90 110"><path d="M10 110 Q14 60 8 10 M22 110 Q30 64 40 22 M32 110 Q30 70 20 34 M44 110 Q52 76 64 48"/></svg></div>
+  <div class="ground">
+    <svg class="edge" viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0 90 V48 C220 22 460 36 700 52 C940 68 1200 30 1440 44 V90 Z"/></svg>
+    <div class="page"><article>
+      <p class="open">Amir says the oasis has one color. He's wrong, and I've told him so, and now I'm telling you.</p>
+      <p>Shade alone has a dozen. There is the blue shade under the palms at noon, cool enough to drink. The green shade of the vine trellis, where the light comes through the leaves already softened. The brown shade of a doorway where an old man has sat so long the wall has learned the shape of his back.</p>
+      <p>In the late afternoon, all of them turn gold at the edges, as though the day is quietly gilding everything before it lets it go.</p>
+      <div class="orn"><svg><use href="#orn"/></svg></div>
+      <p>I've started carrying a small notebook just to write down shades. It is a ridiculous hobby. It has made me pay attention to the world like nothing else ever has.</p>
+      <div class="sig"><svg><use href="#seal-simi"/></svg><span class="n">Simi</span><span class="a" lang="ar">سيمي</span></div>
+    </article></div>
+    <svg class="edge bottom" viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0 0 H1440 V52 C1220 22 1000 70 760 46 C520 22 260 64 0 42 Z"/></svg>
+  </div>
+</section>
+
+<!-- ============ 5 · Amir · evening ============ -->
+<section class="station" id="s5" data-written="2026-10-06T13:05" data-time="dusk" data-author="amir" data-title="Salt and Honey">
+  <div class="threshold">
+    <div class="horizon" data-palms="right"></div>
+    <div class="heading">
+      <div class="cartouche"><svg><use href="#seal-amir"/></svg><span class="n">Amir</span><span class="a" lang="ar">أمير</span></div>
+      <p class="when">Evening · October 6</p>
+      <h2 class="title">Salt and Honey</h2>
+    </div>
+  </div>
+  <div class="pool"><div class="reflection" aria-hidden="true">Salt and Honey</div>
+    <svg class="reeds r" viewBox="0 0 90 110"><path d="M10 110 Q14 60 8 10 M22 110 Q30 64 40 22 M32 110 Q30 70 20 34 M44 110 Q52 76 64 48"/></svg></div>
+  <div class="ground">
+    <svg class="edge" viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0 90 V50 C240 26 460 30 700 50 C940 70 1180 30 1440 42 V90 Z"/></svg>
+    <div class="page"><article>
+      <p class="open">Past the last line of palms there is a lake so salty you float without trying. People go at sunset, when the surface turns the color of apricot jam and the far shore dissolves into haze.</p>
+      <p>I went with a woman who sells honey from a cooler strapped to the back of her motorbike. She swam the way some people sleep — completely, without thinking about it — and when she came out she told me the salt takes things from you. Aches. Grudges. Whatever you carried in.</p>
+      <blockquote>The salt takes. The honey gives back. That is the whole bargain of a day.</blockquote>
+      <p>She handed me a spoonful afterward, standing on the shore with the light going, and I understood her entirely.</p>
+      <p>Since then I've been trying to write in a way that does both. Takes something off the reader's shoulders. Leaves something sweet in its place.</p>
+      <div class="sig"><svg><use href="#seal-amir"/></svg><span class="n">Amir</span><span class="a" lang="ar">أمير</span></div>
+    </article></div>
+    <svg class="edge bottom" viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0 0 H1440 V60 C1220 30 1000 70 760 46 C520 22 260 66 0 44 Z"/></svg>
+  </div>
+</section>
+
+<!-- ============ 6 · Simi · nightfall ============ -->
+<section class="station" id="s6" data-written="2026-10-04T21:50" data-time="night" data-author="simi" data-title="Letters to the Water">
+  <div class="threshold">
+    <div class="horizon" data-palms="left"></div>
+    <div class="heading">
+      <div class="cartouche"><svg><use href="#seal-simi"/></svg><span class="n">Simi</span><span class="a" lang="ar">سيمي</span></div>
+      <p class="when">Nightfall · October 4</p>
+      <h2 class="title">Letters to the Water</h2>
+    </div>
+  </div>
+  <div class="pool"><div class="reflection" aria-hidden="true">Letters to the Water</div>
+    <svg class="reeds l" viewBox="0 0 90 110"><path d="M10 110 Q14 60 8 10 M22 110 Q30 64 40 22 M32 110 Q30 70 20 34 M44 110 Q52 76 64 48 M56 110 Q58 86 52 66"/></svg></div>
+  <div class="ground">
+    <svg class="edge" viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0 90 V40 C280 62 520 24 760 40 C1000 56 1220 30 1440 46 V90 Z"/></svg>
+    <div class="page"><article>
+      <p class="open">When I was a girl, my mother taught me to fold paper boats and set them on the canal with a wish written inside. The wish had to be small, she said. The water doesn't carry heavy things far.</p>
+      <p>I still do it. Here, at the edge of the spring, after the lanterns are lit and the frogs begin their long argument with the dark.</p>
+      <p>Last night I wrote: <em>let him finish the book.</em> I folded it twice and let it go. It turned once in the current, as if reading the message to itself, then drifted out past the reeds where I couldn't follow.</p>
+      <blockquote>Heavy things don't travel far on water. So I write them small, and send them often.</blockquote>
+      <p>He doesn't know I do this. Maybe now he will.</p>
+      <div class="sig"><svg><use href="#seal-simi"/></svg><span class="n">Simi</span><span class="a" lang="ar">سيمي</span></div>
+    </article></div>
+    <svg class="edge bottom" viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0 0 H1440 V40 C1200 74 960 26 720 54 C480 80 240 30 0 58 Z"/></svg>
+  </div>
+</section>
+
+<!-- ============ 7 · Amir · midnight ============ -->
+<section class="station" id="s7" data-written="2026-10-02T02:20" data-time="midnight" data-author="amir" data-title="Crossing by Starlight">
+  <div class="threshold">
+    <div class="horizon" data-palms="right"></div>
+    <div class="heading">
+      <div class="cartouche"><svg><use href="#seal-amir"/></svg><span class="n">Amir</span><span class="a" lang="ar">أمير</span></div>
+      <p class="when">Midnight · October 2</p>
+      <h2 class="title">Crossing by Starlight</h2>
+    </div>
+  </div>
+  <div class="pool"><div class="reflection" aria-hidden="true">Crossing by Starlight</div>
+    <svg class="reeds r" viewBox="0 0 90 110"><path d="M10 110 Q14 60 8 10 M22 110 Q30 64 40 22 M32 110 Q30 70 20 34"/></svg></div>
+  <div class="ground">
+    <svg class="edge" viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0 90 V46 C260 22 500 40 740 50 C980 60 1220 26 1440 42 V90 Z"/></svg>
+    <div class="page"><article>
+      <p class="open">The old caravans crossed at night. Not because it was safer — it wasn't, particularly — but because the sand is cool after dark and the stars are a map that never needs updating.</p>
+      <p>My uncle could name forty of them. He'd point with his cigarette, the ember tracing little constellations of its own: there is the one that rises over Siwa, there is the one the fishermen in Alexandria call the Lantern, there is the one that means you've gone too far south.</p>
+      <p>Last night I lay on the roof of the guesthouse and tried to remember even five. I got three. Then I stopped trying and just looked, and that turned out to be the point.</p>
+      <div class="orn"><svg><use href="#orn"/></svg></div>
+      <p>If you've come this far, all the way down under the dark, thank you for walking with us. The water is behind you now. The next spring rises at dawn.</p>
+      <div class="sig"><svg><use href="#seal-amir"/></svg><span class="n">Amir</span><span class="a" lang="ar">أمير</span></div>
+    </article></div>
+    <svg class="edge bottom" viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0 0 H1440 V56 C1200 26 980 74 720 48 C460 22 240 70 0 40 Z"/></svg>
+  </div>
+</section>
+
+<!-- ============ THE FAR SHORE ============ -->
+<footer class="station end" id="end" data-time="deep" data-title="The far shore">
+  <div class="threshold">
+    <div class="horizon" data-palms="both"></div>
+    <div class="heading">
+      <p class="when">Deep Night</p>
+      <h2 class="title">The Far Shore</h2>
+    </div>
+  </div>
+  <div class="pool"><div class="reflection" aria-hidden="true">The Far Shore</div></div>
+  <div class="ground">
+    <svg class="edge" viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0 90 V48 C260 24 500 34 720 50 C940 66 1180 28 1440 44 V90 Z"/></svg>
+    <div class="page">
+      <p>You've reached the edge of the oasis. Rest a while — or go back to where the sun is rising.</p>
+      <a class="return" href="#top">↑ Return to first light</a>
+      <div class="colophon">© 2026 Amir &amp; Simi · Wāḥa</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) document.querySelectorAll('animate').forEach(a => a.remove());
+
+  /* ---------- Horizons ---------- */
+  const sets = {
+    left:  [[40,1.05,-4],[140,.82,6],[225,1.15,-2],[320,.7,7]],
+    right: [[1300,1.05,4],[1210,.85,-6],[1120,1.12,3],[1030,.68,-7]],
+    both:  [[50,1,-4],[150,.78,6],[240,1.1,-2],[1290,1.06,4],[1195,.8,-5],[1110,.95,3]]
+  };
+  const far = [[560,.34],[600,.27],[640,.31],[860,.3],[905,.24]];
+  const palm=(x,s,r,fill)=>{const h=150*s,w=95*s,y=252-h;
+    return `<use href="#palm" x="${x}" y="${y}" width="${w}" height="${h}" style="fill:var(${fill})" transform="rotate(${r||0} ${x+w/2} 252)"/>`;};
+  document.querySelectorAll('.horizon').forEach(el=>{
+    const p = sets[el.dataset.palms] || sets.both;
+    el.innerHTML = `<svg viewBox="0 0 1440 260" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+      <path style="fill:var(--far)" d="M0 196 C200 150 360 140 560 168 C760 196 900 128 1120 148 C1260 160 1360 172 1440 168 V260 H0Z"/>
+      ${far.map(f=>palm(f[0],f[1],0,'--mid')).join('')}
+      <path style="fill:var(--mid)" d="M0 226 C180 198 330 206 520 220 C720 236 880 192 1100 206 C1250 216 1360 222 1440 218 V260 H0Z"/>
+      ${p.map(q=>palm(q[0],q[1],q[2],'--near')).join('')}
+      <path style="fill:var(--near)" d="M0 250 C300 240 600 246 900 243 C1150 241 1300 247 1440 245 V260 H0Z"/>
+    </svg>`;
+  });
+
+  /* ---------- Stars ---------- */
+  const starBox=document.getElementById('stars');
+  for(let i=0;i<150;i++){const s=document.createElement('div');s.className='star';const z=Math.random()*1.8+.6;
+    s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*70}%;width:${z}px;height:${z}px;--d:${3+Math.random()*5}s;--dl:${-Math.random()*6}s`;
+    starBox.appendChild(s);}
+
+  /* ---------- River rail, colored by author ---------- */
+  const places=[...document.querySelectorAll('[data-time]')];
+  const river=document.querySelector('.river');
+  places.forEach(el=>{
+    const a=document.createElement('a'); a.href='#'+el.id;
+    const au=el.dataset.author;
+    if(au) a.setAttribute('data-author',au);
+    a.innerHTML=`<i></i><span>${el.dataset.title}${au?`<b>${au[0].toUpperCase()+au.slice(1)}</b>`:''}</span>`;
+    river.appendChild(a);
+  });
+  const dots=[...river.children];
+
+  /* ---------- Day cycle ---------- */
+  const SKY={
+    predawn: {t:'#1e2247',b:'#b47c78',sun:-14,sc:'#ffb27a',st:.85,mo:0,ma:30},
+    dawn:    {t:'#86abd0',b:'#f8cf9f',sun:22, sc:'#ffd08a',st:.04,mo:0,ma:30},
+    morning: {t:'#6aa6d6',b:'#f1e4c2',sun:50, sc:'#ffe7a8',st:0,  mo:0,ma:30},
+    noon:    {t:'#3a8fca',b:'#d6ece6',sun:88, sc:'#fff3c4',st:0,  mo:0,ma:30},
+    golden:  {t:'#5b8fbe',b:'#f6c98a',sun:132,sc:'#ffc46a',st:0,  mo:0,ma:30},
+    dusk:    {t:'#45305e',b:'#ec8850',sun:166,sc:'#ff8446',st:.35,mo:.25,ma:18},
+    night:   {t:'#0d1236',b:'#28325f',sun:205,sc:'#ff8446',st:1,  mo:1,ma:50},
+    midnight:{t:'#0a0e2c',b:'#1d2650',sun:205,sc:'#ff8446',st:1,  mo:1,ma:86},
+    deep:    {t:'#070a22',b:'#151b40',sun:205,sc:'#ff8446',st:1,  mo:1,ma:120}
+  };
+  const hex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+  const mix=(a,b,t)=>{const A=hex(a),B=hex(b);return `rgb(${A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(',')})`;};
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  const root=document.documentElement.style,sun=document.getElementById('sun'),moon=document.getElementById('moon'),chip=document.querySelector('.chip');
+  let anchors=[];
+  function measure(){anchors=places.map(el=>({y:el.offsetTop+el.querySelector('.threshold').offsetHeight*.55,c:SKY[el.dataset.time]}));}
+  function update(){
+    const y=scrollY+innerHeight*.5;
+    let i=0; while(i<anchors.length-2&&y>anchors[i+1].y)i++;
+    const A=anchors[i],B=anchors[i+1];
+    let t=(y-A.y)/(B.y-A.y); t=Math.max(0,Math.min(1,t)); t=t*t*(3-2*t);
+    root.setProperty('--sky-top',mix(A.c.t,B.c.t,t));
+    root.setProperty('--sky-bot',mix(A.c.b,B.c.b,t));
+    root.setProperty('--sun-c',mix(A.c.sc,B.c.sc,t));
+    const a=lerp(A.c.sun,B.c.sun,t)*Math.PI/180;
+    sun.style.left=(50-44*Math.cos(a))+'vw'; sun.style.top=(78-62*Math.sin(a))+'vh';
+    const m=lerp(A.c.ma,B.c.ma,t)*Math.PI/180;
+    moon.style.left=(50-40*Math.cos(m))+'vw'; moon.style.top=(70-55*Math.sin(m))+'vh';
+    moon.style.opacity=lerp(A.c.mo,B.c.mo,t);
+    starBox.style.opacity=lerp(A.c.st,B.c.st,t);
+    const cur=t<.5?i:i+1;
+    dots.forEach((d,k)=>d.classList.toggle('on',k===cur));
+    chip.classList.toggle('show',scrollY>innerHeight*.7);
+  }
+  let ticking=false;
+  addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(()=>{update();ticking=false;});}},{passive:true});
+  addEventListener('resize',()=>{measure();update();});
+  addEventListener('load',()=>{measure();update();});
+  measure();update();
+
+  /* ---------- The hour each piece was written: sun by day, moon by night ---------- */
+  function skyGlyph(d){
+    const h=d.getHours()+d.getMinutes()/60, day=h>=6&&h<18, t=day?(h-6)/12:(((h-18)+24)%24)/12, a=t*Math.PI;
+    const x=+(20-15*Math.cos(a)).toFixed(1), y=+(19-15*Math.sin(a)).toFixed(1);
+    const orb=day?`<circle cx="${x}" cy="${y}" r="3.2" fill="currentColor"/><circle cx="${x}" cy="${y}" r="5.6" fill="none" stroke="currentColor" stroke-width=".8" opacity=".5"/>`
+      :`<path fill="currentColor" d="M${x+1.5} ${y-3.5}A3.8 3.8 0 1 0 ${x+1.5} ${y+3.5}A4.4 4.4 0 0 1 ${x+1.5} ${y-3.5}Z"/>`;
+    return `<svg class="skyg" viewBox="0 0 40 24" aria-hidden="true"><path d="M5 19A15 15 0 0 1 35 19" fill="none" stroke="currentColor" stroke-width=".9" stroke-dasharray="1.2 2.4" opacity=".55"/><path d="M1 19.5H39" stroke="currentColor" stroke-width=".9" opacity=".7"/>${orb}</svg>`;
+  }
+  const fmtTime=d=>d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}).toLowerCase();
+  document.querySelectorAll('.station[data-written]').forEach(st=>{
+    const d=new Date(st.dataset.written), when=st.querySelector('.when');
+    if(when){ when.insertAdjacentHTML('afterbegin',skyGlyph(d)); when.title='Written at '+fmtTime(d); }
+    const sig=st.querySelector('.sig'); if(sig){ const at=document.createElement('span'); at.className='at'; at.textContent='written at '+fmtTime(d); sig.appendChild(at); }
+  });
+  /* Illuminated: a stitch for every day the piece was tended */
+  document.querySelectorAll('.illuminated').forEach(st=>{
+    const n=+st.dataset.tended||0;
+    st.querySelector('.stitches').innerHTML='<i></i>'.repeat(n);
+    st.querySelector('.tended-txt').textContent=`Tended across ${n} days · ${st.dataset.span}`;
+  });
+
+  /* ---------- Reveals ---------- */
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),
+    {threshold:.15,rootMargin:'0px 0px -6% 0px'});
+  document.querySelectorAll('.heading, .page article > *').forEach(el=>io.observe(el));
+
+  /* ---------- The writers' secret entrance ---------- */
+  const store={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
+  const NAMES={amir:'Amir',simi:'Simi'};
+  const gate=document.getElementById('gate'), key=document.getElementById('key'), err=document.getElementById('err');
+  const quill=document.getElementById('quill');
+  let chosen=store.get('waha-writer')||'amir';
+  function refresh(){
+    const w=store.get('waha-writer');
+    document.body.classList.toggle('signed',!!w);
+    if(w){ quill.dataset.author=w; document.getElementById('quillSeal').setAttribute('href','#seal-'+w); }
+  }
+  function pick(w){ chosen=w; gate.dataset.author=w;
+    document.querySelectorAll('.seal').forEach(b=>b.classList.toggle('on',b.dataset.w===w)); }
+  function openGate(){
+    const w=store.get('waha-writer');
+    document.getElementById('paneIn').hidden=!!w; document.getElementById('paneOut').hidden=!w;
+    if(w){ gate.dataset.author=w; document.getElementById('wbName').textContent='Welcome back, '+NAMES[w]; }
+    else { pick(chosen); err.textContent=''; key.value=''; setTimeout(()=>key.focus(),350); }
+    gate.classList.add('open');
+  }
+  const closeGate=()=>gate.classList.remove('open');
+  const go=()=>{ location.href='waha-editor.html'; };
+  document.querySelectorAll('.seal').forEach(b=>b.addEventListener('click',()=>{ pick(b.dataset.w); key.focus(); }));
+  function enter(){
+    if(key.value.trim().length<4){ err.textContent='That key doesn\u2019t open the garden.'; key.focus(); return; }
+    store.set('waha-writer',chosen); store.set('waha-author',chosen); refresh(); go();
+  }
+  document.getElementById('enter').addEventListener('click',enter);
+  key.addEventListener('keydown',e=>{ if(e.key==='Enter') enter(); });
+  document.getElementById('goWrite').addEventListener('click',()=>{ store.set('waha-author',store.get('waha-writer')); go(); });
+  document.getElementById('signOut').addEventListener('click',()=>{ store.del('waha-writer'); refresh(); closeGate(); });
+  document.getElementById('gateX').addEventListener('click',closeGate);
+  gate.addEventListener('click',e=>{ if(e.target===gate) closeGate(); });
+  addEventListener('keydown',e=>{ if(e.key==='Escape') closeGate(); });
+  quill.addEventListener('click',()=>store.set('waha-author',store.get('waha-writer')));
+
+  // Press and hold the Arabic wordmark (at the top, or in the floating chip) for about a second
+  const HOLD=1100;
+  document.querySelectorAll('.hold').forEach(el=>{
+    let t0=0, raf=0, done=false;
+    const stop=()=>{ cancelAnimationFrame(raf); el.classList.remove('holding'); el.style.setProperty('--p',0); };
+    const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/HOLD); el.style.setProperty('--p',p);
+      if(p>=1){ done=true; stop(); if(navigator.vibrate) navigator.vibrate(15); openGate(); } else raf=requestAnimationFrame(tick); };
+    el.addEventListener('pointerdown',()=>{ done=false; t0=performance.now(); el.classList.add('holding'); raf=requestAnimationFrame(tick); });
+    ['pointerup','pointerleave','pointercancel'].forEach(ev=>el.addEventListener(ev,()=>{ if(!done) stop(); }));
+    el.addEventListener('contextmenu',e=>e.preventDefault());
+    const a=el.closest('a'); if(a) a.addEventListener('click',e=>{ if(done){ e.preventDefault(); done=false; } },true);
+  });
+  refresh();
+})();
+</script>
+</body>
+</html>
